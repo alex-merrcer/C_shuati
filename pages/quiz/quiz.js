@@ -24,8 +24,16 @@ function getQuestionById(id) {
   return null
 }
 
-function getWrongQuestionIds() {
-  return storage.getWrongQuestionIds(questions)
+function getQuestionsBySubject(subject) {
+  const normalizedSubject = storage.normalizeSubject(subject)
+
+  return questions.filter(function (question) {
+    return storage.normalizeSubject(question.subject) === normalizedSubject
+  })
+}
+
+function getWrongQuestionIds(questionList, subject) {
+  return storage.getWrongQuestionIds(questionList, subject)
 }
 
 function saveWrongQuestionRecord(id, selectedAnswer) {
@@ -61,14 +69,17 @@ function createRoundStats(total) {
 
 Page({
   data: {
+    subject: 'c',
     mode: 'random',
     chapter: '',
+    type: '',
     questionList: [],
     answerRecords: {},
     roundStats: createRoundStats(0),
     currentIndex: 0,
     totalCount: 0,
     currentQuestion: null,
+    displayCode: '',
     optionItems: [],
     selectedAnswer: null,
     submitted: false,
@@ -77,14 +88,17 @@ Page({
   },
 
   onLoad(options) {
+    const subject = storage.normalizeSubject(options.subject || 'c')
     const mode = options.mode || 'random'
     const chapter = options.chapter ? decodeURIComponent(options.chapter) : ''
+    const type = options.type ? decodeURIComponent(options.type) : ''
+    const subjectQuestions = getQuestionsBySubject(subject)
     let list = []
 
     storage.migrateWrongQuestions(questions)
 
     if (mode === 'chapter') {
-      list = questions.filter(function (item) {
+      list = subjectQuestions.filter(function (item) {
         return item.chapter === chapter
       })
 
@@ -92,32 +106,43 @@ Page({
         this.backWithToast('该章节暂无题目')
         return
       }
+    } else if (mode === 'type') {
+      list = subjectQuestions.filter(function (item) {
+        return item.type === type
+      })
+
+      if (list.length === 0) {
+        this.backWithToast('该题型暂无题目')
+        return
+      }
     } else if (mode === 'wrong') {
-      const wrongIds = getWrongQuestionIds()
+      const wrongIds = getWrongQuestionIds(subjectQuestions, subject)
 
       if (wrongIds.length === 0) {
         this.backWithToast('暂无错题')
         return
       }
 
-      list = questions.filter(function (item) {
+      list = subjectQuestions.filter(function (item) {
         return wrongIds.indexOf(item.id) !== -1
       })
 
       if (list.length === 0) {
-        storage.clearWrongQuestions()
+        storage.clearWrongQuestions(subject)
         this.backWithToast('暂无错题')
         return
       }
     } else {
-      list = questions
+      list = subjectQuestions
     }
 
     const shuffled = shuffleQuestions(list)
 
     this.setData({
+      subject: subject,
       mode: mode,
       chapter: chapter,
+      type: type,
       questionList: shuffled,
       answerRecords: {},
       roundStats: createRoundStats(shuffled.length),
@@ -147,9 +172,11 @@ Page({
     const selectedAnswer = record ? record.selectedAnswer : null
     const submitted = !!record
     const isCorrect = record ? record.isCorrect : false
+    const displayCode = question && question.code && question.question.indexOf(question.code) === -1 ? question.code : ''
 
     this.setData({
       currentQuestion: question,
+      displayCode: displayCode,
       optionItems: this.buildOptionItems(question, selectedAnswer, submitted),
       selectedAnswer: selectedAnswer,
       submitted: submitted,

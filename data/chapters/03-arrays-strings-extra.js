@@ -4,7 +4,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的接口契约角度判断（样例组 0）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;",
     "options": [
       "a[4] 是数组最后一个元素",
       "写 1 个 int 越界会被 C 语言自动忽略",
@@ -12,7 +12,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 2,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。",
     "tags": [
       "数组",
       "越界",
@@ -30,7 +30,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的单元测试覆盖角度判断（样例组 1）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -38,7 +38,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "sizeof",
       "数组",
@@ -62,7 +62,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的代码评审角度判断（样例组 2）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -70,7 +70,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "数组传参",
       "函数",
@@ -92,7 +92,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的内存破坏定位角度判断（样例组 3）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -100,7 +100,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -124,7 +124,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的寄存器副作用角度判断（样例组 4）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -132,7 +132,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -154,7 +154,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的编译优化影响角度判断（样例组 5）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -162,7 +162,7 @@ module.exports = [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。",
     "tags": [
       "字符串",
       "\\0",
@@ -184,7 +184,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的资源受限 MCU角度判断（样例组 6）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
@@ -192,7 +192,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到命令行参数复制里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strlen",
       "字符串",
@@ -213,7 +213,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "面试",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的面试追问角度判断（样例组 7）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
@@ -221,7 +221,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 1,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -242,7 +242,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的调试复盘角度判断（样例组 8）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -250,7 +250,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "strncpy",
       "字符串",
@@ -272,7 +272,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的量产固件稳定性角度判断（样例组 9）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -280,7 +280,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "strcat",
       "字符串",
@@ -303,7 +303,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的初始化顺序角度判断（样例组 10）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -311,7 +311,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "strcmp",
       "字符串",
@@ -334,7 +334,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的边界条件角度判断（样例组 11）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -342,7 +342,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。",
     "tags": [
       "memcpy",
       "内存",
@@ -365,7 +365,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的失败路径角度判断（样例组 12）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -373,7 +373,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "memmove",
       "内存",
@@ -396,7 +396,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的生命周期角度判断（样例组 13）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -404,7 +404,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "memset",
       "字节",
@@ -428,7 +428,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的可移植性角度判断（样例组 14）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -436,7 +436,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -459,7 +459,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的中断安全角度判断（样例组 15）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "a[4] 是数组最后一个元素",
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
@@ -467,7 +467,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 1,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到命令行参数复制里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -485,7 +485,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的长期运行稳定性角度判断（样例组 16）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -493,7 +493,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "sizeof",
       "数组",
@@ -517,7 +517,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的接口契约角度判断（样例组 17）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -525,7 +525,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "数组传参",
       "函数",
@@ -547,7 +547,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的单元测试覆盖角度判断（样例组 18）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -555,7 +555,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -578,7 +578,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的代码评审角度判断（样例组 19）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -586,7 +586,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -608,7 +608,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的内存破坏定位角度判断（样例组 20）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -616,7 +616,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到AT 指令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "字符串",
       "\\0",
@@ -639,7 +639,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的寄存器副作用角度判断（样例组 21）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -647,7 +647,7 @@ module.exports = [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到配置项读取里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strlen",
       "字符串",
@@ -668,7 +668,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "易错",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的编译优化影响角度判断（样例组 22）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
       "字符串字面量在只读区，所以复制时不会越界",
@@ -676,7 +676,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 0,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到命令行参数复制里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -697,7 +697,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的资源受限 MCU角度判断（样例组 23）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -705,7 +705,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "strncpy",
       "字符串",
@@ -727,7 +727,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的面试追问角度判断（样例组 24）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -735,7 +735,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "strcat",
       "字符串",
@@ -759,7 +759,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的调试复盘角度判断（样例组 25）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -767,7 +767,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "strcmp",
       "字符串",
@@ -791,7 +791,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的量产固件稳定性角度判断（样例组 26）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -799,7 +799,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -821,7 +821,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的初始化顺序角度判断（样例组 27）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -829,7 +829,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "memmove",
       "内存",
@@ -852,7 +852,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的边界条件角度判断（样例组 28）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -860,7 +860,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "memset",
       "字节",
@@ -884,7 +884,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的失败路径角度判断（样例组 29）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -892,7 +892,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -915,7 +915,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的生命周期角度判断（样例组 30）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
       "a[4] 是数组最后一个元素",
@@ -923,7 +923,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 0,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到AT 指令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -944,7 +944,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的可移植性角度判断（样例组 31）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -952,7 +952,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "sizeof",
       "数组",
@@ -976,7 +976,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的中断安全角度判断（样例组 32）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -984,7 +984,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "数组传参",
       "函数",
@@ -1007,7 +1007,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的长期运行稳定性角度判断（样例组 33）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1015,7 +1015,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -1038,7 +1038,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的接口契约角度判断（样例组 34）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1046,7 +1046,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -1068,7 +1068,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的单元测试覆盖角度判断（样例组 35）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
@@ -1076,7 +1076,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到日志前缀拼接里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "字符串",
       "\\0",
@@ -1098,7 +1098,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的代码评审角度判断（样例组 36）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -1106,7 +1106,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到协议字段转字符串里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strlen",
       "字符串",
@@ -1127,7 +1127,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的内存破坏定位角度判断（样例组 37）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "strcpy 会自动截断超出 name 容量的内容",
@@ -1135,7 +1135,7 @@ module.exports = [
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围"
     ],
     "answer": 3,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到AT 指令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -1156,7 +1156,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的寄存器副作用角度判断（样例组 38）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1164,7 +1164,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "strncpy",
       "字符串",
@@ -1186,7 +1186,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的编译优化影响角度判断（样例组 39）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1194,7 +1194,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "strcat",
       "字符串",
@@ -1218,7 +1218,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的资源受限 MCU角度判断（样例组 40）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1226,7 +1226,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "strcmp",
       "字符串",
@@ -1250,7 +1250,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的面试追问角度判断（样例组 41）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1258,7 +1258,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -1282,7 +1282,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的调试复盘角度判断（样例组 42）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1290,7 +1290,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "memmove",
       "内存",
@@ -1313,7 +1313,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的量产固件稳定性角度判断（样例组 43）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1321,7 +1321,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "memset",
       "字节",
@@ -1345,7 +1345,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的初始化顺序角度判断（样例组 44）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1353,7 +1353,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -1376,7 +1376,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的边界条件角度判断（样例组 45）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "a[4] 是数组最后一个元素",
       "写 1 个 int 越界会被 C 语言自动忽略",
@@ -1384,7 +1384,7 @@ module.exports = [
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险"
     ],
     "answer": 3,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到配置项读取里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -1402,7 +1402,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的失败路径角度判断（样例组 46）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1410,7 +1410,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "sizeof",
       "数组",
@@ -1434,7 +1434,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的生命周期角度判断（样例组 47）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1442,7 +1442,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "数组传参",
       "函数",
@@ -1465,7 +1465,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的可移植性角度判断（样例组 48）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1473,7 +1473,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -1497,7 +1497,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的中断安全角度判断（样例组 49）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1505,7 +1505,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -1528,7 +1528,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的长期运行稳定性角度判断（样例组 50）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
@@ -1536,7 +1536,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到设备名保存里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "字符串",
       "\\0",
@@ -1558,7 +1558,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的接口契约角度判断（样例组 51）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
@@ -1566,7 +1566,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strlen",
       "字符串",
@@ -1587,7 +1587,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的单元测试覆盖角度判断（样例组 52）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "strcpy 会自动截断超出 name 容量的内容",
@@ -1595,7 +1595,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 2,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到配置项读取里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -1615,7 +1615,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的代码评审角度判断（样例组 53）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1623,7 +1623,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "strncpy",
       "字符串",
@@ -1645,7 +1645,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的内存破坏定位角度判断（样例组 54）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1653,7 +1653,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "strcat",
       "字符串",
@@ -1677,7 +1677,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的寄存器副作用角度判断（样例组 55）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1685,7 +1685,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "strcmp",
       "字符串",
@@ -1709,7 +1709,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的编译优化影响角度判断（样例组 56）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1717,7 +1717,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -1740,7 +1740,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的资源受限 MCU角度判断（样例组 57）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1748,7 +1748,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "memmove",
       "内存",
@@ -1771,7 +1771,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的面试追问角度判断（样例组 58）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1779,7 +1779,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "memset",
       "字节",
@@ -1803,7 +1803,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的调试复盘角度判断（样例组 59）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1811,7 +1811,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -1834,7 +1834,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的量产固件稳定性角度判断（样例组 60）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "a[4] 是数组最后一个元素",
       "写 1 个 int 越界会被 C 语言自动忽略",
@@ -1842,7 +1842,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 2,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到日志前缀拼接里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -1860,7 +1860,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的初始化顺序角度判断（样例组 61）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1868,7 +1868,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "sizeof",
       "数组",
@@ -1890,7 +1890,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的边界条件角度判断（样例组 62）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -1898,7 +1898,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "数组传参",
       "函数",
@@ -1920,7 +1920,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的失败路径角度判断（样例组 63）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -1928,7 +1928,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -1951,7 +1951,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的生命周期角度判断（样例组 64）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -1959,7 +1959,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -1981,7 +1981,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的可移植性角度判断（样例组 65）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -1989,7 +1989,7 @@ module.exports = [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "字符串",
       "\\0",
@@ -2011,7 +2011,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的中断安全角度判断（样例组 66）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
@@ -2019,7 +2019,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到命令行参数复制里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "strlen",
       "字符串",
@@ -2041,7 +2041,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "面试",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的长期运行稳定性角度判断（样例组 67）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
@@ -2049,7 +2049,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 1,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到日志前缀拼接里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -2069,7 +2069,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的接口契约角度判断（样例组 68）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2077,7 +2077,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "strncpy",
       "字符串",
@@ -2099,7 +2099,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的单元测试覆盖角度判断（样例组 69）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2107,7 +2107,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "strcat",
       "字符串",
@@ -2130,7 +2130,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的代码评审角度判断（样例组 70）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2138,7 +2138,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "strcmp",
       "字符串",
@@ -2161,7 +2161,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的内存破坏定位角度判断（样例组 71）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -2169,7 +2169,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -2192,7 +2192,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的寄存器副作用角度判断（样例组 72）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2200,7 +2200,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时长度单位是字节还是字符。",
     "tags": [
       "memmove",
       "内存",
@@ -2223,7 +2223,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的编译优化影响角度判断（样例组 73）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2231,7 +2231,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "memset",
       "字节",
@@ -2255,7 +2255,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的资源受限 MCU角度判断（样例组 74）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2263,7 +2263,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -2286,7 +2286,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的面试追问角度判断（样例组 75）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "a[4] 是数组最后一个元素",
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
@@ -2294,7 +2294,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 1,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到协议字段转字符串里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -2313,7 +2313,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的调试复盘角度判断（样例组 76）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2321,7 +2321,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "sizeof",
       "数组",
@@ -2345,7 +2345,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的量产固件稳定性角度判断（样例组 77）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2353,7 +2353,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "数组传参",
       "函数",
@@ -2375,7 +2375,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的初始化顺序角度判断（样例组 78）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2383,7 +2383,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -2406,7 +2406,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的边界条件角度判断（样例组 79）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -2414,7 +2414,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -2436,7 +2436,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的失败路径角度判断（样例组 80）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -2444,7 +2444,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到AT 指令解析里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "字符串",
       "\\0",
@@ -2466,7 +2466,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的生命周期角度判断（样例组 81）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -2474,7 +2474,7 @@ module.exports = [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到配置项读取里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "strlen",
       "字符串",
@@ -2496,7 +2496,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "易错",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的可移植性角度判断（样例组 82）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
       "字符串字面量在只读区，所以复制时不会越界",
@@ -2504,7 +2504,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 0,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到协议字段转字符串里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -2524,7 +2524,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的中断安全角度判断（样例组 83）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -2532,7 +2532,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "strncpy",
       "字符串",
@@ -2554,7 +2554,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的长期运行稳定性角度判断（样例组 84）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2562,7 +2562,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看连续调用两次时输入长度刚好等于目标容量。",
     "tags": [
       "strcat",
       "字符串",
@@ -2585,7 +2585,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的接口契约角度判断（样例组 85）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2593,7 +2593,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "strcmp",
       "字符串",
@@ -2617,7 +2617,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的单元测试覆盖角度判断（样例组 86）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2625,7 +2625,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -2648,7 +2648,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的代码评审角度判断（样例组 87）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -2656,7 +2656,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "memmove",
       "内存",
@@ -2679,7 +2679,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的内存破坏定位角度判断（样例组 88）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2687,7 +2687,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "memset",
       "字节",
@@ -2711,7 +2711,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的寄存器副作用角度判断（样例组 89）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2719,7 +2719,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -2742,7 +2742,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的编译优化影响角度判断（样例组 90）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
       "a[4] 是数组最后一个元素",
@@ -2750,7 +2750,7 @@ module.exports = [
       "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 0,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到设备名保存里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -2768,7 +2768,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的资源受限 MCU角度判断（样例组 91）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -2776,7 +2776,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "sizeof",
       "数组",
@@ -2800,7 +2800,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的面试追问角度判断（样例组 92）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2808,7 +2808,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "数组传参",
       "函数",
@@ -2832,7 +2832,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的调试复盘角度判断（样例组 93）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -2840,7 +2840,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -2863,7 +2863,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的量产固件稳定性角度判断（样例组 94）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2871,7 +2871,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看连续调用两次时源数据没有结尾 0。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -2893,7 +2893,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的初始化顺序角度判断（样例组 95）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
@@ -2901,7 +2901,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到日志前缀拼接里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "字符串",
       "\\0",
@@ -2923,7 +2923,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的边界条件角度判断（样例组 96）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "在 strlen 前调用 free(rx)，避免局部数组泄漏",
@@ -2931,7 +2931,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到协议字段转字符串里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "strlen",
       "字符串",
@@ -2953,7 +2953,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的失败路径角度判断（样例组 0）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "strcpy 会自动截断超出 name 容量的内容",
@@ -2961,7 +2961,7 @@ module.exports = [
       "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围"
     ],
     "answer": 3,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到设备名保存里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -2981,7 +2981,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的生命周期角度判断（样例组 1）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -2989,7 +2989,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "strncpy",
       "字符串",
@@ -3012,7 +3012,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的可移植性角度判断（样例组 2）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -3020,7 +3020,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "strcat",
       "字符串",
@@ -3043,7 +3043,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的中断安全角度判断（样例组 3）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3051,7 +3051,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "strcmp",
       "字符串",
@@ -3075,7 +3075,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的长期运行稳定性角度判断（样例组 4）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3083,7 +3083,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -3106,7 +3106,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的接口契约角度判断（样例组 5）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -3114,7 +3114,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "memmove",
       "内存",
@@ -3137,7 +3137,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的单元测试覆盖角度判断（样例组 6）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -3145,7 +3145,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "memset",
       "字节",
@@ -3169,7 +3169,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的代码评审角度判断（样例组 7）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3177,7 +3177,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "snprintf",
       "缓冲区",
@@ -3200,7 +3200,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的内存破坏定位角度判断（样例组 8）。\nint a[4] = {0};\na[4] = 1;",
+    "question": "在串口接收缓冲区中看到下面这段和「数组越界」有关的代码，最主要的风险是什么？\nint a[4] = {0};\na[4] = 1;\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "a[4] 是数组最后一个元素",
       "写 1 个 int 越界会被 C 语言自动忽略",
@@ -3208,7 +3208,7 @@ module.exports = [
       "访问 a[4] 越过数组末尾，有破坏相邻内存的风险"
     ],
     "answer": 3,
-    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "C 数组下标从 0 到 n-1。 真正会出问题的是：正常路径、失败返回和边界输入有没有被同一段代码同时处理。 初始化不会额外创建哨兵元素。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "数组",
       "越界",
@@ -3226,7 +3226,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的寄存器副作用角度判断（样例组 9）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组大小计算」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -3234,7 +3234,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "sizeof",
       "数组",
@@ -3258,7 +3258,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的编译优化影响角度判断（样例组 10）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「数组作为函数参数」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -3266,7 +3266,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看连续调用两次时源指针为 NULL。",
     "tags": [
       "数组传参",
       "函数",
@@ -3288,7 +3288,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的资源受限 MCU角度判断（样例组 11）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「二维数组传参」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3296,7 +3296,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到串口接收缓冲区里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "二维数组",
       "数组指针",
@@ -3319,7 +3319,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的面试追问角度判断（样例组 12）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「柔性数组成员」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3327,7 +3327,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到命令行参数复制里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "柔性数组",
       "结构体",
@@ -3350,7 +3350,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的调试复盘角度判断（样例组 13）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「字符串结束符」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
@@ -3358,7 +3358,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到设备名保存里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "字符串",
       "\\0",
@@ -3380,7 +3380,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的量产固件稳定性角度判断（样例组 14）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "question": "这段「strlen」代码还少一个关键保护，应该先补哪一步？\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "把 rx 改成 int 数组，strlen 就能自动知道长度",
       "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
@@ -3388,7 +3388,7 @@ module.exports = [
       "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。 这段代码缺的不是语法，而是要补上：目标缓冲区容量、结束符和源数据长度是否同时受控。 局部数组不能 free，sizeof(&rx) 也不是容量。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "strlen",
       "字符串",
@@ -3409,7 +3409,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的初始化顺序角度判断（样例组 15）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "question": "在串口接收缓冲区中看到下面这段和「strcpy」有关的代码，最主要的风险是什么？\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串字面量在只读区，所以复制时不会越界",
       "strcpy 会自动截断超出 name 容量的内容",
@@ -3417,7 +3417,7 @@ module.exports = [
       "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 2,
-    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 正确选项指出固定数组和无边界复制组合的风险。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "strcpy",
       "缓冲区",
@@ -3437,7 +3437,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的边界条件角度判断（样例组 16）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strncpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3445,7 +3445,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到AT 指令解析里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "strncpy",
       "字符串",
@@ -3467,7 +3467,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的失败路径角度判断（样例组 17）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcat」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -3475,7 +3475,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到配置项读取里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "strcat",
       "字符串",
@@ -3498,7 +3498,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的生命周期角度判断（样例组 18）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「strcmp」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -3506,7 +3506,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志前缀拼接里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "strcmp",
       "字符串",
@@ -3530,7 +3530,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "基础",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的可移植性角度判断（样例组 19）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memcpy」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3538,7 +3538,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "memcpy",
       "内存",
@@ -3561,7 +3561,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "进阶",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的中断安全角度判断（样例组 20）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memmove」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "1，因为 uint8_t 是 1 字节",
@@ -3569,7 +3569,7 @@ module.exports = [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到协议字段转字符串里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "memmove",
       "内存",
@@ -3592,7 +3592,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "易错",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的长期运行稳定性角度判断（样例组 21）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「memset」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
       "16，因为形参写了 buf[16]",
@@ -3600,7 +3600,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到设备名保存里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "memset",
       "字节",
@@ -3623,7 +3623,7 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "面试",
-    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的接口契约角度判断（样例组 22）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "question": "按题干给定假设分析这段「snprintf」代码，哪项结果正确？\nvoid clear_buf(uint8_t buf[16]) {\n memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "16，因为形参写了 buf[16]",
       "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
@@ -3631,7 +3631,7 @@ module.exports = [
       "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 先按题干假设推导，再检查：隐式类型转换、运算符结合顺序和题干给定的平台假设是否一致。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Bootloader 命令解析里，重点看连续调用两次时目标数组只剩一个字节。",
     "tags": [
       "snprintf",
       "缓冲区",

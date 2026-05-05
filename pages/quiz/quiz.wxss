@@ -47,6 +47,19 @@
   white-space: pre-wrap;
 }
 
+.code-block {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  color: #e5e7eb;
+  background: #111827;
+  font-family: Menlo, Consolas, monospace;
+  font-size: 25rpx;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .options {
   display: flex;
   flex-direction: column;

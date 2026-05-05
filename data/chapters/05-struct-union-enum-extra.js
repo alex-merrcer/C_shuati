@@ -4,7 +4,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的失败路径角度判断（样例组 68）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -12,7 +12,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。",
     "tags": [
       "结构体",
       "初始化",
@@ -32,7 +32,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的生命周期角度判断（样例组 69）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -40,7 +40,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“自动存储期、静态存储期、局部变量分配、协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -65,7 +65,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的可移植性角度判断（样例组 70）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -73,7 +73,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -93,7 +93,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "面试",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的中断安全角度判断（样例组 71）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
     "options": [
       "5，结构体大小一定等于所有成员大小之和",
       "4，因为结构体大小等于最大成员大小",
@@ -101,7 +101,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 2,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。",
     "tags": [
       "结构体",
       "对齐",
@@ -123,7 +123,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "基础",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的长期运行稳定性角度判断（样例组 72）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
     "options": [
       "宏不能接收表达式作为参数",
       "SQUARE 会在运行时自动创建临时变量保护参数",
@@ -131,7 +131,7 @@ module.exports = [
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)"
     ],
     "answer": 3,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -151,7 +151,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的接口契约角度判断（样例组 73）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -159,7 +159,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "packed",
       "对齐",
@@ -179,7 +179,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的单元测试覆盖角度判断（样例组 74）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -187,7 +187,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "位段",
       "可移植性",
@@ -207,7 +207,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "面试",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的代码评审角度判断（样例组 75）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
       "删除 volatile，让编译器把读取优化成一次",
       "把返回类型改成 uint8_t，自动避免并发问题",
@@ -215,7 +215,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。",
     "tags": [
       "共用体",
       "内存",
@@ -234,7 +234,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的内存破坏定位角度判断（样例组 76）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -242,7 +242,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“自动存储期、静态存储期、局部变量分配、协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "共用体",
       "协议",
@@ -264,7 +264,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "进阶",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的寄存器副作用角度判断（样例组 77）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
     "options": [
       "raw 的值为 3，枚举常量可以显式指定取值",
       "BUSY 一定自动等于 1，不能显式赋值",
@@ -272,7 +272,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 0,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。",
     "tags": [
       "enum",
       "状态机",
@@ -290,7 +290,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的编译优化影响角度判断（样例组 78）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -298,7 +298,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "初始化",
@@ -319,7 +319,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的资源受限 MCU角度判断（样例组 79）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -327,7 +327,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -347,7 +347,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的面试追问角度判断（样例组 80）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -355,7 +355,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到协议帧头解析里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -376,7 +376,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "进阶",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的调试复盘角度判断（样例组 81）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "8，a 后面通常会有 3 字节填充，整体大小也按最大对齐补齐",
       "5，结构体大小一定等于所有成员大小之和",
@@ -384,7 +384,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 0,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -405,7 +405,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "易错",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的量产固件稳定性角度判断（样例组 82）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)",
@@ -413,7 +413,7 @@ module.exports = [
       "把 y 改成 unsigned 就能修复宏展开问题"
     ],
     "answer": 1,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -433,7 +433,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的初始化顺序角度判断（样例组 83）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -441,7 +441,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "packed",
       "对齐",
@@ -461,7 +461,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的边界条件角度判断（样例组 84）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -469,7 +469,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "位段",
       "可移植性",
@@ -490,7 +490,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "进阶",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的失败路径角度判断（样例组 85）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到寄存器状态位清除里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
       "删除 volatile，让编译器把读取优化成一次",
@@ -498,7 +498,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到寄存器状态位清除里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -516,7 +516,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的生命周期角度判断（样例组 86）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -524,7 +524,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“自动存储期、静态存储期、局部变量分配、协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "共用体",
       "协议",
@@ -547,7 +547,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "面试",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的可移植性角度判断（样例组 87）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到Flash 参数结构保存里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "BUSY 一定自动等于 1，不能显式赋值",
       "enum 变量只能保存 0 和 1",
@@ -555,7 +555,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 2,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -574,7 +574,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的中断安全角度判断（样例组 88）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -582,7 +582,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "结构体",
       "初始化",
@@ -603,7 +603,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的长期运行稳定性角度判断（样例组 89）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -611,7 +611,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -631,7 +631,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的接口契约角度判断（样例组 90）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -639,7 +639,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -660,7 +660,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "面试",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的单元测试覆盖角度判断（样例组 91）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "5，结构体大小一定等于所有成员大小之和",
       "4，因为结构体大小等于最大成员大小",
@@ -668,7 +668,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 2,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -689,7 +689,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "基础",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的代码评审角度判断（样例组 92）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "SQUARE 会在运行时自动创建临时变量保护参数",
@@ -697,7 +697,7 @@ module.exports = [
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)"
     ],
     "answer": 3,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -718,7 +718,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的内存破坏定位角度判断（样例组 93）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -726,7 +726,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "packed",
       "对齐",
@@ -747,7 +747,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的寄存器副作用角度判断（样例组 94）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -755,7 +755,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到协议帧头解析里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "位段",
       "可移植性",
@@ -775,7 +775,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "面试",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的编译优化影响角度判断（样例组 95）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到DMA 完成标志检查里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "删除 volatile，让编译器把读取优化成一次",
       "把返回类型改成 uint8_t，自动避免并发问题",
@@ -783,7 +783,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到DMA 完成标志检查里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -802,7 +802,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的资源受限 MCU角度判断（样例组 96）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -810,7 +810,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "共用体",
       "协议",
@@ -830,7 +830,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "进阶",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的面试追问角度判断（样例组 0）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到跨 MCU 数据交换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "raw 的值为 3，枚举常量可以显式指定取值",
       "BUSY 一定自动等于 1，不能显式赋值",
@@ -838,7 +838,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 0,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -858,7 +858,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的调试复盘角度判断（样例组 1）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -866,7 +866,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "结构体",
       "初始化",
@@ -886,7 +886,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的量产固件稳定性角度判断（样例组 2）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -894,7 +894,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -915,7 +915,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的初始化顺序角度判断（样例组 3）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -923,7 +923,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -943,7 +943,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "进阶",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的边界条件角度判断（样例组 4）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "8，a 后面通常会有 3 字节填充，整体大小也按最大对齐补齐",
       "5，结构体大小一定等于所有成员大小之和",
@@ -951,7 +951,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 0,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到网络字节序转换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -972,7 +972,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "易错",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的失败路径角度判断（样例组 5）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)",
@@ -980,7 +980,7 @@ module.exports = [
       "把 y 改成 unsigned 就能修复宏展开问题"
     ],
     "answer": 1,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到网络字节序转换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -1000,7 +1000,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的生命周期角度判断（样例组 6）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1008,7 +1008,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“自动存储期、静态存储期、局部变量分配、协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "packed",
       "对齐",
@@ -1030,7 +1030,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的可移植性角度判断（样例组 7）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1038,7 +1038,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "位段",
       "可移植性",
@@ -1058,7 +1058,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "进阶",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的中断安全角度判断（样例组 8）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到UART 接收回调里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
       "删除 volatile，让编译器把读取优化成一次",
@@ -1066,7 +1066,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到UART 接收回调里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -1085,7 +1085,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的长期运行稳定性角度判断（样例组 9）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1093,7 +1093,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时大小端是否写清楚。",
     "tags": [
       "共用体",
       "协议",
@@ -1113,7 +1113,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "面试",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的接口契约角度判断（样例组 10）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到网络字节序转换里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "BUSY 一定自动等于 1，不能显式赋值",
       "enum 变量只能保存 0 和 1",
@@ -1121,7 +1121,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 2,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到网络字节序转换里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -1139,7 +1139,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的单元测试覆盖角度判断（样例组 11）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1147,7 +1147,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到协议帧头解析里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "结构体",
       "初始化",
@@ -1168,7 +1168,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的代码评审角度判断（样例组 12）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -1176,7 +1176,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -1196,7 +1196,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的内存破坏定位角度判断（样例组 13）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1204,7 +1204,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -1224,7 +1224,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "面试",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的寄存器副作用角度判断（样例组 14）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "5，结构体大小一定等于所有成员大小之和",
       "4，因为结构体大小等于最大成员大小",
@@ -1232,7 +1232,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 2,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到寄存器位域审查里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -1252,7 +1252,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "基础",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的编译优化影响角度判断（样例组 15）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "SQUARE 会在运行时自动创建临时变量保护参数",
@@ -1260,7 +1260,7 @@ module.exports = [
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)"
     ],
     "answer": 3,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到寄存器位域审查里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -1280,7 +1280,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的资源受限 MCU角度判断（样例组 16）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -1288,7 +1288,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "packed",
       "对齐",
@@ -1308,7 +1308,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的面试追问角度判断（样例组 17）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1316,7 +1316,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "位段",
       "可移植性",
@@ -1338,7 +1338,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "面试",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的调试复盘角度判断（样例组 18）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到SysTick 计数里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "删除 volatile，让编译器把读取优化成一次",
       "把返回类型改成 uint8_t，自动避免并发问题",
@@ -1346,7 +1346,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到SysTick 计数里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -1364,7 +1364,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的量产固件稳定性角度判断（样例组 19）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1372,7 +1372,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "共用体",
       "协议",
@@ -1392,7 +1392,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "进阶",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的初始化顺序角度判断（样例组 20）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到寄存器位域审查里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "raw 的值为 3，枚举常量可以显式指定取值",
       "BUSY 一定自动等于 1，不能显式赋值",
@@ -1400,7 +1400,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 0,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到寄存器位域审查里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -1419,7 +1419,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的边界条件角度判断（样例组 21）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1427,7 +1427,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "结构体",
       "初始化",
@@ -1448,7 +1448,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的失败路径角度判断（样例组 22）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1456,7 +1456,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时memcpy 长度是否正好覆盖字段。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -1476,7 +1476,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的生命周期角度判断（样例组 23）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1484,7 +1484,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“自动存储期、静态存储期、局部变量分配、协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到协议帧头解析里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -1509,7 +1509,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "进阶",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的可移植性角度判断（样例组 24）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "8，a 后面通常会有 3 字节填充，整体大小也按最大对齐补齐",
       "5，结构体大小一定等于所有成员大小之和",
@@ -1517,7 +1517,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 0,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到结构体数组序列化里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -1538,7 +1538,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "易错",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的中断安全角度判断（样例组 25）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)",
@@ -1546,7 +1546,7 @@ module.exports = [
       "把 y 改成 unsigned 就能修复宏展开问题"
     ],
     "answer": 1,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到结构体数组序列化里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -1567,7 +1567,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的长期运行稳定性角度判断（样例组 26）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1575,7 +1575,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "packed",
       "对齐",
@@ -1595,7 +1595,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的接口契约角度判断（样例组 27）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1603,7 +1603,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "位段",
       "可移植性",
@@ -1623,7 +1623,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "进阶",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的单元测试覆盖角度判断（样例组 28）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到GPIO 输出寄存器修改里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
       "删除 volatile，让编译器把读取优化成一次",
@@ -1631,7 +1631,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到GPIO 输出寄存器修改里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -1650,7 +1650,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的代码评审角度判断（样例组 29）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1658,7 +1658,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "共用体",
       "协议",
@@ -1678,7 +1678,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "面试",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的内存破坏定位角度判断（样例组 30）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到结构体数组序列化里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "BUSY 一定自动等于 1，不能显式赋值",
       "enum 变量只能保存 0 和 1",
@@ -1686,7 +1686,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 2,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到结构体数组序列化里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -1708,7 +1708,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的寄存器副作用角度判断（样例组 31）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1716,7 +1716,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "结构体",
       "初始化",
@@ -1736,7 +1736,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的编译优化影响角度判断（样例组 32）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -1744,7 +1744,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -1765,7 +1765,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的资源受限 MCU角度判断（样例组 33）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1773,7 +1773,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -1793,7 +1793,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "面试",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的面试追问角度判断（样例组 34）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "5，结构体大小一定等于所有成员大小之和",
       "4，因为结构体大小等于最大成员大小",
@@ -1801,7 +1801,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 2,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到升级包头校验里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -1823,7 +1823,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "基础",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的调试复盘角度判断（样例组 35）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "SQUARE 会在运行时自动创建临时变量保护参数",
@@ -1831,7 +1831,7 @@ module.exports = [
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)"
     ],
     "answer": 3,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到升级包头校验里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -1851,7 +1851,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "进阶",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的量产固件稳定性角度判断（样例组 36）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
       "memcpy 会自动把外部字节序转换成本机字节序",
@@ -1859,7 +1859,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 0,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时union 当前有效成员是否明确。",
     "tags": [
       "packed",
       "对齐",
@@ -1878,7 +1878,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的初始化顺序角度判断（样例组 37）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1886,7 +1886,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到协议帧头解析里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "位段",
       "可移植性",
@@ -1906,7 +1906,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "面试",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的边界条件角度判断（样例组 38）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到低功耗唤醒标志里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "删除 volatile，让编译器把读取优化成一次",
       "把返回类型改成 uint8_t，自动避免并发问题",
@@ -1914,7 +1914,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到低功耗唤醒标志里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -1933,7 +1933,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的失败路径角度判断（样例组 39）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -1941,7 +1941,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到Flash 参数结构保存里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "共用体",
       "协议",
@@ -1960,7 +1960,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "进阶",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的生命周期角度判断（样例组 40）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到升级包头校验里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "raw 的值为 3，枚举常量可以显式指定取值",
       "BUSY 一定自动等于 1，不能显式赋值",
@@ -1968,7 +1968,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 0,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到升级包头校验里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",
@@ -1990,7 +1990,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体初始化",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体初始化」的可移植性角度判断（样例组 41）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体初始化」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -1998,7 +1998,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到跨 MCU 数据交换里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "结构体",
       "初始化",
@@ -2019,7 +2019,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体指针访问",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体指针访问」的中断安全角度判断（样例组 42）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体指针访问」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -2027,7 +2027,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到网络字节序转换里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "结构体指针",
       "NULL",
@@ -2048,7 +2048,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体浅拷贝",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「结构体浅拷贝」的长期运行稳定性角度判断（样例组 43）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「结构体浅拷贝」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -2056,7 +2056,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到寄存器位域审查里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "结构体",
       "浅拷贝",
@@ -2077,7 +2077,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体对齐",
     "difficulty": "进阶",
-    "question": "假设 uint32_t 按 4 字节对齐，sizeof(struct S) 通常是多少？\n请重点从「结构体对齐」的接口契约角度判断（样例组 44）。\nstruct S {\n    uint8_t a;\n    uint32_t b;\n};",
+    "question": "按题干给定假设分析这段「结构体对齐」代码，哪项结果正确？\nstruct S {\n uint8_t a;\n uint32_t b;\n};\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "8，a 后面通常会有 3 字节填充，整体大小也按最大对齐补齐",
       "5，结构体大小一定等于所有成员大小之和",
@@ -2085,7 +2085,7 @@ module.exports = [
       "C 语言禁止结构体中出现填充字节"
     ],
     "answer": 0,
-    "explanation": "结构体大小不是简单求和。编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "结构体大小不是简单求和。 先按题干假设推导，再检查：结构体布局、填充字节、对齐和字节序假设是否写清楚。 编译器会为了成员对齐插入 padding，题干给出了常见对齐假设。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "结构体",
       "对齐",
@@ -2105,7 +2105,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "offsetof宏",
     "difficulty": "易错",
-    "question": "下面宏的主要问题是什么？\n请重点从「offsetof宏」的单元测试覆盖角度判断（样例组 45）。\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);",
+    "question": "在协议帧头解析中看到下面这段和「offsetof宏」有关的代码，最主要的风险是什么？\n#define SQUARE(x) x * x\nint y = SQUARE(1 + 2);\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "宏不能接收表达式作为参数",
       "宏参数和整体表达式缺少括号，展开后不是期望的 (1 + 2) * (1 + 2)",
@@ -2113,7 +2113,7 @@ module.exports = [
       "把 y 改成 unsigned 就能修复宏展开问题"
     ],
     "answer": 1,
-    "explanation": "函数式宏是文本替换。正确写法通常是 #define SQUARE(x) ((x) * (x))。 同时要把“成员偏移、container_of思想”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "函数式宏是文本替换。 真正会出问题的是：宏展开后的真实表达式、参数副作用和语句边界是否仍正确。 正确写法通常是 #define SQUARE(x) ((x) * (x))。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "offsetof",
       "结构体布局",
@@ -2133,7 +2133,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "packed结构体",
     "difficulty": "面试",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「packed结构体」的代码评审角度判断（样例组 46）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「packed结构体」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -2141,7 +2141,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 2,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到结构体数组序列化里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "packed",
       "对齐",
@@ -2161,7 +2161,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "位段可移植性",
     "difficulty": "基础",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「位段可移植性」的内存破坏定位角度判断（样例组 47）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「位段可移植性」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "结构体成员在所有编译器上都紧密排列",
@@ -2169,7 +2169,7 @@ module.exports = [
       "直接按结构体布局解析会受填充字节、对齐和字节序影响"
     ],
     "answer": 3,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到升级包头校验里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "位段",
       "可移植性",
@@ -2191,7 +2191,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体内存共享",
     "difficulty": "进阶",
-    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「共用体内存共享」的寄存器副作用角度判断（样例组 48）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "question": "这段「共用体内存共享」代码还少一个关键保护，应该先补哪一步？\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n return adc_value;\n}\n请把它放到设备忙等待循环里判断，尤其看首次调用时volatile 是否只解决可见性。",
     "options": [
       "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
       "删除 volatile，让编译器把读取优化成一次",
@@ -2199,7 +2199,7 @@ module.exports = [
       "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 这段代码缺的不是语法，而是要补上：共享变量可见性、寄存器副作用和读改写是否需要额外的原子性保护。\n补测时把代码放到设备忙等待循环里，重点看首次调用时volatile 是否只解决可见性。",
     "tags": [
       "共用体",
       "内存",
@@ -2217,7 +2217,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "共用体协议解析",
     "difficulty": "易错",
-    "question": "下面代码解析外部数据的主要风险是什么？\n请重点从「共用体协议解析」的编译优化影响角度判断（样例组 49）。\nstruct Header {\n    uint8_t type;\n    uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));",
+    "question": "在协议帧头解析中看到下面这段和「共用体协议解析」有关的代码，最主要的风险是什么？\nstruct Header {\n uint8_t type;\n uint32_t len;\n};\n\nstruct Header h;\nmemcpy(&h, flash_addr, sizeof(h));\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "memcpy 会自动把外部字节序转换成本机字节序",
       "直接按结构体布局解析会受填充字节、对齐和字节序影响",
@@ -2225,7 +2225,7 @@ module.exports = [
       "只要用了 uint32_t，未对齐访问一定不会出问题"
     ],
     "answer": 1,
-    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。memcpy 不会自动处理字节序、padding 或对齐问题。 同时要把“协议字段解析”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "协议、Flash 记录和通信帧更适合按字节显式解析。 真正会出问题的是：结构体布局、填充字节、对齐和字节序假设是否写清楚。 memcpy 不会自动处理字节序、padding 或对齐问题。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时enum 底层取值是否被误当宽度。",
     "tags": [
       "共用体",
       "协议",
@@ -2245,7 +2245,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "枚举与状态机",
     "difficulty": "面试",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「枚举与状态机」的资源受限 MCU角度判断（样例组 50）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「枚举与状态机」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;\n请把它放到日志二进制格式解析里判断，尤其看首次调用时填充字节是否被当成有效字段。",
     "options": [
       "BUSY 一定自动等于 1，不能显式赋值",
       "enum 变量只能保存 0 和 1",
@@ -2253,7 +2253,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 2,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到日志二进制格式解析里，重点看首次调用时填充字节是否被当成有效字段。",
     "tags": [
       "enum",
       "状态机",

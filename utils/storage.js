@@ -1,6 +1,22 @@
 const WRONG_IDS_KEY = 'wrongQuestionIds'
 const WRONG_MAP_KEY = 'wrongQuestionMap'
 const STUDY_STATS_KEY = 'studyStats'
+const SUBJECTS = {
+  c: true,
+  stm32: true
+}
+
+function normalizeSubject(subject) {
+  return SUBJECTS[subject] ? subject : 'c'
+}
+
+function getQuestionSubject(question) {
+  return normalizeSubject(question && question.subject)
+}
+
+function getScopedKey(subject, key) {
+  return normalizeSubject(subject) + '::' + key
+}
 
 function getTodayKey() {
   const date = new Date()
@@ -13,18 +29,6 @@ function getTodayKey() {
   return year + '-' + month + '-' + day
 }
 
-function getDefaultStudyStats() {
-  return {
-    totalAnswered: 0,
-    totalCorrect: 0,
-    totalWrong: 0,
-    chapterStats: {},
-    topicStats: {},
-    dailyStats: {},
-    lastStudyAt: 0
-  }
-}
-
 function normalizeCounter(value) {
   const source = value && typeof value === 'object' ? value : {}
 
@@ -33,6 +37,62 @@ function normalizeCounter(value) {
     correct: Number(source.correct) || 0,
     wrong: Number(source.wrong) || 0
   }
+}
+
+function getDefaultStudyStats() {
+  return {
+    totalAnswered: 0,
+    totalCorrect: 0,
+    totalWrong: 0,
+    subjectStats: {
+      c: normalizeCounter(null),
+      stm32: normalizeCounter(null)
+    },
+    chapterStats: {},
+    topicStats: {},
+    dailyStats: {},
+    lastStudyAt: 0
+  }
+}
+
+function normalizeSubjectStats(rawSubjectStats, fallback) {
+  const source = rawSubjectStats && typeof rawSubjectStats === 'object' && !Array.isArray(rawSubjectStats) ? rawSubjectStats : {}
+
+  return {
+    c: normalizeCounter(source.c || fallback),
+    stm32: normalizeCounter(source.stm32)
+  }
+}
+
+function cloneMap(source) {
+  const map = {}
+
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return map
+  }
+
+  Object.keys(source).forEach(function (key) {
+    map[key] = normalizeCounter(source[key])
+  })
+
+  return map
+}
+
+function ensureLegacyScopedMap(map, subject, isDaily) {
+  Object.keys(map).forEach(function (key) {
+    if (key.indexOf('::') !== -1) {
+      return
+    }
+
+    if (isDaily && !/^\d{4}-\d{2}-\d{2}$/.test(key)) {
+      return
+    }
+
+    const scopedKey = getScopedKey(subject, key)
+    if (!map[scopedKey]) {
+      map[scopedKey] = normalizeCounter(map[key])
+    }
+  })
 }
 
 function getStudyStats() {
@@ -47,9 +107,18 @@ function getStudyStats() {
   stats.totalCorrect = Number(rawStats.totalCorrect) || 0
   stats.totalWrong = Number(rawStats.totalWrong) || 0
   stats.lastStudyAt = Number(rawStats.lastStudyAt) || 0
-  stats.chapterStats = rawStats.chapterStats && typeof rawStats.chapterStats === 'object' && !Array.isArray(rawStats.chapterStats) ? rawStats.chapterStats : {}
-  stats.topicStats = rawStats.topicStats && typeof rawStats.topicStats === 'object' && !Array.isArray(rawStats.topicStats) ? rawStats.topicStats : {}
-  stats.dailyStats = rawStats.dailyStats && typeof rawStats.dailyStats === 'object' && !Array.isArray(rawStats.dailyStats) ? rawStats.dailyStats : {}
+  stats.subjectStats = normalizeSubjectStats(rawStats.subjectStats, {
+    answered: stats.totalAnswered,
+    correct: stats.totalCorrect,
+    wrong: stats.totalWrong
+  })
+  stats.chapterStats = cloneMap(rawStats.chapterStats)
+  stats.topicStats = cloneMap(rawStats.topicStats)
+  stats.dailyStats = cloneMap(rawStats.dailyStats)
+
+  ensureLegacyScopedMap(stats.chapterStats, 'c', false)
+  ensureLegacyScopedMap(stats.topicStats, 'c', false)
+  ensureLegacyScopedMap(stats.dailyStats, 'c', true)
 
   return stats
 }
@@ -60,11 +129,7 @@ function saveStudyStats(stats) {
 
 function addCounter(map, key, isCorrect) {
   if (!map[key]) {
-    map[key] = {
-      answered: 0,
-      correct: 0,
-      wrong: 0
-    }
+    map[key] = normalizeCounter(null)
   } else {
     map[key] = normalizeCounter(map[key])
   }
@@ -81,6 +146,7 @@ function addCounter(map, key, isCorrect) {
 function updateStudyStats(question, isCorrect) {
   const stats = getStudyStats()
   const todayKey = getTodayKey()
+  const subject = getQuestionSubject(question)
 
   stats.totalAnswered += 1
 
@@ -90,9 +156,11 @@ function updateStudyStats(question, isCorrect) {
     stats.totalWrong += 1
   }
 
-  addCounter(stats.chapterStats, question.chapter, isCorrect)
-  addCounter(stats.topicStats, question.topic, isCorrect)
+  addCounter(stats.subjectStats, subject, isCorrect)
+  addCounter(stats.chapterStats, getScopedKey(subject, question.chapter), isCorrect)
+  addCounter(stats.topicStats, getScopedKey(subject, question.topic), isCorrect)
   addCounter(stats.dailyStats, todayKey, isCorrect)
+  addCounter(stats.dailyStats, getScopedKey(subject, todayKey), isCorrect)
   stats.lastStudyAt = Date.now()
 
   saveStudyStats(stats)
@@ -117,6 +185,29 @@ function getAccuracyText(correct, answered) {
   }
 
   return getAccuracy(correct, answered) + '%'
+}
+
+function getScopedCounter(map, subject, key) {
+  const scopedKey = getScopedKey(subject, key)
+
+  if (map && map[scopedKey]) {
+    return normalizeCounter(map[scopedKey])
+  }
+
+  if (normalizeSubject(subject) === 'c' && map && map[key]) {
+    return normalizeCounter(map[key])
+  }
+
+  return normalizeCounter(null)
+}
+
+function getSubjectStats(stats, subject) {
+  const source = stats && stats.subjectStats ? stats.subjectStats : {}
+  return normalizeCounter(source[normalizeSubject(subject)])
+}
+
+function getSubjectDailyStats(stats, subject, dayKey) {
+  return getScopedCounter(stats.dailyStats || {}, subject, dayKey)
 }
 
 function getRawWrongIds() {
@@ -146,9 +237,11 @@ function buildQuestionMap(questionList) {
 function normalizeWrongRecord(record, id, question) {
   const source = record && typeof record === 'object' ? record : {}
   const hasWrongCount = source.wrongCount !== undefined && source.wrongCount !== null
+  const subject = normalizeSubject(source.subject || (question ? question.subject : 'c'))
 
   return {
     id: id,
+    subject: subject,
     wrongCount: hasWrongCount ? Number(source.wrongCount) || 0 : 1,
     correctCount: Number(source.correctCount) || 0,
     lastWrongAt: Number(source.lastWrongAt) || 0,
@@ -190,20 +283,35 @@ function migrateWrongQuestions(questionList) {
   return migratedMap
 }
 
-function getWrongQuestionMap(questionList) {
-  return migrateWrongQuestions(questionList)
+function getWrongQuestionMap(questionList, subject) {
+  const map = migrateWrongQuestions(questionList)
+
+  if (!subject) {
+    return map
+  }
+
+  const normalizedSubject = normalizeSubject(subject)
+  const filteredMap = {}
+
+  Object.keys(map).forEach(function (id) {
+    if (normalizeSubject(map[id].subject) === normalizedSubject) {
+      filteredMap[id] = map[id]
+    }
+  })
+
+  return filteredMap
 }
 
-function getWrongQuestionIds(questionList) {
-  return Object.keys(migrateWrongQuestions(questionList))
+function getWrongQuestionIds(questionList, subject) {
+  return Object.keys(getWrongQuestionMap(questionList, subject))
 }
 
-function getWrongQuestionCount(questionList) {
-  return getWrongQuestionIds(questionList).length
+function getWrongQuestionCount(questionList, subject) {
+  return getWrongQuestionIds(questionList, subject).length
 }
 
 function saveWrongQuestion(question, selectedAnswer) {
-  const map = migrateWrongQuestions()
+  const map = migrateWrongQuestions([question])
   const existed = !!map[question.id]
   const now = Date.now()
   const record = normalizeWrongRecord(map[question.id], question.id, question)
@@ -211,6 +319,7 @@ function saveWrongQuestion(question, selectedAnswer) {
   record.wrongCount += existed ? 1 : 0
   record.lastWrongAt = now
   record.lastSelectedAnswer = selectedAnswer
+  record.subject = getQuestionSubject(question)
   record.chapter = question.chapter
   record.topic = question.topic
   map[question.id] = record
@@ -238,18 +347,37 @@ function removeWrongQuestion(questionOrId) {
   return true
 }
 
-function clearWrongQuestions() {
-  wx.setStorageSync(WRONG_IDS_KEY, [])
-  wx.setStorageSync(WRONG_MAP_KEY, {})
+function clearWrongQuestions(subject) {
+  if (!subject) {
+    wx.setStorageSync(WRONG_IDS_KEY, [])
+    wx.setStorageSync(WRONG_MAP_KEY, {})
+    return
+  }
+
+  const normalizedSubject = normalizeSubject(subject)
+  const map = migrateWrongQuestions()
+
+  Object.keys(map).forEach(function (id) {
+    if (normalizeSubject(map[id].subject) === normalizedSubject) {
+      delete map[id]
+    }
+  })
+
+  saveWrongMap(map)
 }
 
 module.exports = {
+  normalizeSubject: normalizeSubject,
+  getScopedKey: getScopedKey,
   getTodayKey: getTodayKey,
   getStudyStats: getStudyStats,
   updateStudyStats: updateStudyStats,
   clearStudyStats: clearStudyStats,
   getAccuracy: getAccuracy,
   getAccuracyText: getAccuracyText,
+  getScopedCounter: getScopedCounter,
+  getSubjectStats: getSubjectStats,
+  getSubjectDailyStats: getSubjectDailyStats,
   migrateWrongQuestions: migrateWrongQuestions,
   getWrongQuestionMap: getWrongQuestionMap,
   getWrongQuestionIds: getWrongQuestionIds,

@@ -4,7 +4,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的内存破坏定位角度判断（样例组 21）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈后进先出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -12,7 +12,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "数据结构",
       "栈",
@@ -39,7 +39,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的寄存器副作用角度判断（样例组 22）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「顺序栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -47,7 +47,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "数组",
@@ -74,7 +74,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的编译优化影响角度判断（样例组 23）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链式栈」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -82,7 +82,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "栈",
       "链表",
@@ -110,7 +110,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的资源受限 MCU角度判断（样例组 24）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「队列先进先出」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
@@ -118,7 +118,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。",
     "tags": [
       "队列",
       "FIFO",
@@ -145,7 +145,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "基础",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的面试追问角度判断（样例组 25）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「循环队列空满判断」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -153,7 +153,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到空链表遍历里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "循环队列",
       "环形缓冲区",
@@ -179,7 +179,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的调试复盘角度判断（样例组 26）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「链式队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -187,7 +187,7 @@ module.exports = [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "队列",
       "链表",
@@ -214,7 +214,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的量产固件稳定性角度判断（样例组 27）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表插入」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -222,7 +222,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "链表",
       "插入",
@@ -249,7 +249,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的初始化顺序角度判断（样例组 28）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表删除」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -257,7 +257,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "链表",
       "删除",
@@ -284,7 +284,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的边界条件角度判断（样例组 29）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表遍历」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -292,7 +292,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "链表",
       "遍历",
@@ -320,7 +320,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的失败路径角度判断（样例组 30）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「双向链表」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -328,7 +328,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "双向链表",
       "指针",
@@ -355,7 +355,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的生命周期角度判断（样例组 31）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表与数组取舍」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -363,7 +363,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "链表",
       "数组",
@@ -390,7 +390,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的可移植性角度判断（样例组 32）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆结构用途」代码，哪项结果正确？\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
@@ -398,7 +398,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。",
     "tags": [
       "堆",
       "优先队列",
@@ -426,7 +426,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "基础",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的中断安全角度判断（样例组 33）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆插入上浮」代码，哪项结果正确？\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -434,7 +434,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到空链表遍历里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "上浮",
@@ -463,7 +463,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的长期运行稳定性角度判断（样例组 34）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆删除堆顶」代码，哪项结果正确？\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -471,7 +471,7 @@ module.exports = [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "下沉",
@@ -499,7 +499,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "易错",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的接口契约角度判断（样例组 35）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「优先队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
       "head == tail 天然同时表示空和满，不需要区分",
@@ -507,7 +507,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "优先队列",
       "堆",
@@ -534,7 +534,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的单元测试覆盖角度判断（样例组 36）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈后进先出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -542,7 +542,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "数据结构",
       "栈",
@@ -569,7 +569,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的代码评审角度判断（样例组 37）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「顺序栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -577,7 +577,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "栈",
       "数组",
@@ -604,7 +604,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的内存破坏定位角度判断（样例组 38）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链式栈」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -612,7 +612,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "栈",
       "链表",
@@ -640,7 +640,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "易错",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的寄存器副作用角度判断（样例组 39）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「队列先进先出」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
       "head == tail 天然同时表示空和满，不需要区分",
@@ -648,7 +648,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到尾节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "队列",
       "FIFO",
@@ -675,7 +675,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的编译优化影响角度判断（样例组 40）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「循环队列空满判断」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
@@ -683,7 +683,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表查找失败路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "循环队列",
       "环形缓冲区",
@@ -709,7 +709,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "基础",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的资源受限 MCU角度判断（样例组 41）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「链式队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -717,7 +717,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表插入回滚里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "队列",
       "链表",
@@ -744,7 +744,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的面试追问角度判断（样例组 42）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表插入」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -752,7 +752,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "链表",
       "插入",
@@ -779,7 +779,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的调试复盘角度判断（样例组 43）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表删除」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -787,7 +787,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "链表",
       "删除",
@@ -814,7 +814,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的量产固件稳定性角度判断（样例组 44）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表遍历」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -822,7 +822,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "链表",
       "遍历",
@@ -850,7 +850,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的初始化顺序角度判断（样例组 45）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「双向链表」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -858,7 +858,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "双向链表",
       "指针",
@@ -885,7 +885,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的边界条件角度判断（样例组 46）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表与数组取舍」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -893,7 +893,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "链表",
       "数组",
@@ -920,7 +920,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "易错",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的失败路径角度判断（样例组 47）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆结构用途」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
       "1 基数组堆，left 应该是 2 * i + 1",
@@ -928,7 +928,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "优先队列",
@@ -956,7 +956,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的生命周期角度判断（样例组 48）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆插入上浮」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
@@ -964,7 +964,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到尾节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "上浮",
@@ -993,7 +993,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "基础",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的可移植性角度判断（样例组 49）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆删除堆顶」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -1001,7 +1001,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到链表查找失败路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "下沉",
@@ -1029,7 +1029,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的中断安全角度判断（样例组 50）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「优先队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -1037,7 +1037,7 @@ module.exports = [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到节点池回收函数里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "优先队列",
       "堆",
@@ -1064,7 +1064,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的长期运行稳定性角度判断（样例组 51）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈后进先出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -1072,7 +1072,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "数据结构",
       "栈",
@@ -1099,7 +1099,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的接口契约角度判断（样例组 52）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「顺序栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1107,7 +1107,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时头节点是否需要改 head。",
     "tags": [
       "栈",
       "数组",
@@ -1134,7 +1134,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的单元测试覆盖角度判断（样例组 53）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链式栈」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1142,7 +1142,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "栈",
       "链表",
@@ -1170,7 +1170,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的代码评审角度判断（样例组 54）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「队列先进先出」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -1178,7 +1178,7 @@ module.exports = [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表节点删除函数里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "队列",
       "FIFO",
@@ -1205,7 +1205,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "易错",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的内存破坏定位角度判断（样例组 55）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「循环队列空满判断」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
       "head == tail 天然同时表示空和满，不需要区分",
@@ -1213,7 +1213,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到空链表遍历里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "循环队列",
       "环形缓冲区",
@@ -1239,7 +1239,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的寄存器副作用角度判断（样例组 56）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「链式队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
@@ -1247,7 +1247,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "队列",
       "链表",
@@ -1274,7 +1274,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的编译优化影响角度判断（样例组 57）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表插入」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1282,7 +1282,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "链表",
       "插入",
@@ -1309,7 +1309,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的资源受限 MCU角度判断（样例组 58）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表删除」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1317,7 +1317,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "链表",
       "删除",
@@ -1344,7 +1344,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的面试追问角度判断（样例组 59）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表遍历」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -1352,7 +1352,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "链表",
       "遍历",
@@ -1380,7 +1380,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的调试复盘角度判断（样例组 60）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「双向链表」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1388,7 +1388,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "双向链表",
       "指针",
@@ -1415,7 +1415,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的量产固件稳定性角度判断（样例组 61）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表与数组取舍」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1423,7 +1423,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "链表",
       "数组",
@@ -1450,7 +1450,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的初始化顺序角度判断（样例组 62）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆结构用途」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -1458,7 +1458,7 @@ module.exports = [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到链表插入回滚里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "优先队列",
@@ -1486,7 +1486,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "易错",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的边界条件角度判断（样例组 63）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆插入上浮」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
       "1 基数组堆，left 应该是 2 * i + 1",
@@ -1494,7 +1494,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到节点池回收函数里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "堆",
       "上浮",
@@ -1523,7 +1523,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的失败路径角度判断（样例组 64）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆删除堆顶」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
@@ -1531,7 +1531,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到链表节点删除函数里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "堆",
       "下沉",
@@ -1559,7 +1559,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "基础",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的生命周期角度判断（样例组 65）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「优先队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -1567,7 +1567,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "优先队列",
       "堆",
@@ -1594,7 +1594,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的可移植性角度判断（样例组 66）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈后进先出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1602,7 +1602,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "数据结构",
       "栈",
@@ -1629,7 +1629,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的中断安全角度判断（样例组 67）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「顺序栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -1637,7 +1637,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时尾节点删除后 tail 是否更新。",
     "tags": [
       "栈",
       "数组",
@@ -1664,7 +1664,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的长期运行稳定性角度判断（样例组 68）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链式栈」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1672,7 +1672,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "栈",
       "链表",
@@ -1700,7 +1700,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "基础",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的接口契约角度判断（样例组 69）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「队列先进先出」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -1708,7 +1708,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到尾节点删除路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "队列",
       "FIFO",
@@ -1735,7 +1735,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的单元测试覆盖角度判断（样例组 70）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「循环队列空满判断」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -1743,7 +1743,7 @@ module.exports = [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表查找失败路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "循环队列",
       "环形缓冲区",
@@ -1769,7 +1769,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "易错",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的代码评审角度判断（样例组 71）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「链式队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
       "head == tail 天然同时表示空和满，不需要区分",
@@ -1777,7 +1777,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表插入回滚里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "队列",
       "链表",
@@ -1804,7 +1804,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的内存破坏定位角度判断（样例组 72）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表插入」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1812,7 +1812,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "链表",
       "插入",
@@ -1839,7 +1839,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的寄存器副作用角度判断（样例组 73）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「单链表删除」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1847,7 +1847,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "链表",
       "删除",
@@ -1874,7 +1874,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的编译优化影响角度判断（样例组 74）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表遍历」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1882,7 +1882,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "链表",
       "遍历",
@@ -1910,7 +1910,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的资源受限 MCU角度判断（样例组 75）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「双向链表」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -1918,7 +1918,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "双向链表",
       "指针",
@@ -1945,7 +1945,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的面试追问角度判断（样例组 76）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链表与数组取舍」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1953,7 +1953,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "链表",
       "数组",
@@ -1980,7 +1980,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "基础",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的调试复盘角度判断（样例组 77）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆结构用途」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -1988,7 +1988,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到空链表遍历里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "堆",
       "优先队列",
@@ -2016,7 +2016,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "进阶",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的量产固件稳定性角度判断（样例组 78）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆插入上浮」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "1 基数组堆，left 应该是 2 * i + 1",
       "链式堆结构，不需要数组下标",
@@ -2024,7 +2024,7 @@ module.exports = [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "堆",
       "上浮",
@@ -2053,7 +2053,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "易错",
-    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的初始化顺序角度判断（样例组 79）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "question": "按题干给定假设分析这段「堆删除堆顶」代码，哪项结果正确？\nsize_t parent(size_t i) {\n return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n return 2u * i + 1u;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
       "1 基数组堆，left 应该是 2 * i + 1",
@@ -2061,7 +2061,7 @@ module.exports = [
       "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "C 数组通常是 0 基下标。 先按题干假设推导，再检查：堆的父子下标、容量边界和调整方向是否保持一致。 最大堆和最小堆的下标公式相同，比较方向不同。 计算题要先固定题干给出的位宽、对齐、指针大小或整数类型假设，再按 C 语言规则逐步推导，不能把某个平台的一次输出当作标准结论。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "堆",
       "下沉",
@@ -2089,7 +2089,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的边界条件角度判断（样例组 80）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「优先队列」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
@@ -2097,7 +2097,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到节点池回收函数里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "优先队列",
       "堆",
@@ -2124,7 +2124,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的失败路径角度判断（样例组 81）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈后进先出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -2132,7 +2132,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "数据结构",
       "栈",
@@ -2159,7 +2159,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的生命周期角度判断（样例组 82）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「顺序栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -2167,7 +2167,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时释放后是否还读 victim。",
     "tags": [
       "栈",
       "数组",
@@ -2194,7 +2194,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的可移植性角度判断（样例组 83）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「链式栈」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -2202,7 +2202,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时失败返回后链表是否断开。",
     "tags": [
       "栈",
       "链表",
@@ -2230,7 +2230,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的中断安全角度判断（样例组 84）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「队列先进先出」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "需要区分空和满，例如空一个位置、记录计数或增加状态位",
@@ -2238,7 +2238,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到链表节点删除函数里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "队列",
       "FIFO",
@@ -2265,7 +2265,7 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "基础",
-    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的长期运行稳定性角度判断（样例组 85）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "question": "这段「循环队列空满判断」代码还少一个关键保护，应该先补哪一步？\ntypedef struct {\n uint8_t buf[8];\n uint8_t head;\n uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "head == tail 天然同时表示空和满，不需要区分",
       "把 head 和 tail 改成 int 就能自动区分空满",
@@ -2273,7 +2273,7 @@ module.exports = [
       "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "循环队列必须明确空满判定规则。 这段代码缺的不是语法，而是要补上：队列空、队列满、头尾回绕以及入队出队顺序是否一致。 正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。\n补测时把代码放到空链表遍历里，重点看首次调用时释放前是否保存 next。",
     "tags": [
       "循环队列",
       "环形缓冲区",

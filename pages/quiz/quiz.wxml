@@ -15,6 +15,7 @@
       <text class="meta difficulty">{{currentQuestion.difficulty}}</text>
     </view>
     <view class="question-text">{{currentQuestion.question}}</view>
+    <view class="code-block" wx:if="{{displayCode}}">{{displayCode}}</view>
   </view>
 
   <view class="options">

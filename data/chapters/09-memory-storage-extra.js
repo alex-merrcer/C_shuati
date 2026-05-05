@@ -4,7 +4,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的内存破坏定位角度判断（样例组 69）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -12,7 +12,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "text",
       "段",
@@ -33,7 +33,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的寄存器副作用角度判断（样例组 70）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -41,7 +41,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "rodata",
       "只读",
@@ -63,7 +63,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的编译优化影响角度判断（样例组 71）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -71,7 +71,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "data段",
       "启动",
@@ -92,7 +92,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的资源受限 MCU角度判断（样例组 72）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -100,7 +100,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "bss",
       "启动",
@@ -121,7 +121,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的面试追问角度判断（样例组 73）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -129,7 +129,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。",
     "tags": [
       "栈",
       "栈帧",
@@ -153,7 +153,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的调试复盘角度判断（样例组 74）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -161,7 +161,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "溢出",
@@ -188,7 +188,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的量产固件稳定性角度判断（样例组 75）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
     "options": [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
       "在 malloc 前先 free(buf)",
@@ -196,7 +196,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。",
     "tags": [
       "malloc",
       "动态内存",
@@ -215,7 +215,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "面试",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的初始化顺序角度判断（样例组 76）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "free 后继续通过 p 写内存，属于释放后使用",
@@ -223,7 +223,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 1,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。",
     "tags": [
       "free",
       "悬空指针",
@@ -242,7 +242,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的边界条件角度判断（样例组 77）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -250,7 +250,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 2,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到驱动初始化失败路径里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "内存管理",
@@ -268,7 +268,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的失败路径角度判断（样例组 78）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -276,7 +276,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -299,7 +299,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的生命周期角度判断（样例组 79）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
     "options": [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
       "在 malloc 前先 free(buf)",
@@ -307,7 +307,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到驱动初始化失败路径里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "内存碎片",
       "堆",
@@ -330,7 +330,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的可移植性角度判断（样例组 80）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -338,7 +338,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "realloc",
       "动态内存",
@@ -359,7 +359,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的中断安全角度判断（样例组 81）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -367,7 +367,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时输入长度刚好等于目标容量。",
     "tags": [
       "calloc",
       "动态内存",
@@ -388,7 +388,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的长期运行稳定性角度判断（样例组 82）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -396,7 +396,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "text",
       "段",
@@ -418,7 +418,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的接口契约角度判断（样例组 83）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -426,7 +426,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "rodata",
       "只读",
@@ -447,7 +447,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的单元测试覆盖角度判断（样例组 84）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -455,7 +455,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "data段",
       "启动",
@@ -476,7 +476,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的代码评审角度判断（样例组 85）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -484,7 +484,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "bss",
       "启动",
@@ -506,7 +506,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的内存破坏定位角度判断（样例组 86）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -514,7 +514,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "栈帧",
@@ -541,7 +541,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的寄存器副作用角度判断（样例组 87）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到空链表遍历里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -549,7 +549,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "溢出",
@@ -575,7 +575,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的编译优化影响角度判断（样例组 88）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到驱动初始化失败路径里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
@@ -583,7 +583,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到协议帧缓存申请里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "malloc",
       "动态内存",
@@ -601,7 +601,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的资源受限 MCU角度判断（样例组 89）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到驱动初始化失败路径里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -609,7 +609,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 2,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到协议帧缓存申请里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "悬空指针",
@@ -627,7 +627,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的面试追问角度判断（样例组 90）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到驱动初始化失败路径里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -635,7 +635,7 @@ module.exports = [
       "free 后继续通过 p 写内存，属于释放后使用"
     ],
     "answer": 3,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到配置表重新加载里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "内存管理",
@@ -654,7 +654,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的调试复盘角度判断（样例组 91）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -662,7 +662,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -685,7 +685,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的量产固件稳定性角度判断（样例组 92）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到驱动初始化失败路径里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
@@ -693,7 +693,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到配置表重新加载里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "内存碎片",
       "堆",
@@ -713,7 +713,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的初始化顺序角度判断（样例组 93）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -721,7 +721,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "realloc",
       "动态内存",
@@ -742,7 +742,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的边界条件角度判断（样例组 94）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到命令行参数复制里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -750,7 +750,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "calloc",
       "动态内存",
@@ -772,7 +772,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的失败路径角度判断（样例组 95）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -780,7 +780,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时源数据没有结尾 0。",
     "tags": [
       "text",
       "段",
@@ -801,7 +801,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的生命周期角度判断（样例组 96）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -809,7 +809,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "rodata",
       "只读",
@@ -830,7 +830,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的可移植性角度判断（样例组 0）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -838,7 +838,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "data段",
       "启动",
@@ -860,7 +860,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的中断安全角度判断（样例组 1）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -868,7 +868,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "bss",
       "启动",
@@ -890,7 +890,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的长期运行稳定性角度判断（样例组 2）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -898,7 +898,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "栈帧",
@@ -924,7 +924,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "面试",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的接口契约角度判断（样例组 3）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到单节点链表释放里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -932,7 +932,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "溢出",
@@ -956,7 +956,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的单元测试覆盖角度判断（样例组 4）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到协议帧缓存申请里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -964,7 +964,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到链表节点回收里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "malloc",
       "动态内存",
@@ -983,7 +983,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的代码评审角度判断（样例组 5）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到协议帧缓存申请里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -991,7 +991,7 @@ module.exports = [
       "free 后继续通过 p 写内存，属于释放后使用"
     ],
     "answer": 3,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到链表节点回收里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "悬空指针",
@@ -1009,7 +1009,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "易错",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的内存破坏定位角度判断（样例组 6）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到协议帧缓存申请里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 后继续通过 p 写内存，属于释放后使用",
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
@@ -1017,7 +1017,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 0,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到错误码提前返回里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "内存管理",
@@ -1036,7 +1036,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的寄存器副作用角度判断（样例组 7）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1044,7 +1044,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -1068,7 +1068,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的编译优化影响角度判断（样例组 8）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到协议帧缓存申请里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -1076,7 +1076,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到错误码提前返回里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "内存碎片",
       "堆",
@@ -1096,7 +1096,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的资源受限 MCU角度判断（样例组 9）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1104,7 +1104,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "realloc",
       "动态内存",
@@ -1126,7 +1126,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的面试追问角度判断（样例组 10）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到AT 指令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -1134,7 +1134,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "calloc",
       "动态内存",
@@ -1156,7 +1156,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的调试复盘角度判断（样例组 11）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1164,7 +1164,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "text",
       "段",
@@ -1185,7 +1185,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的量产固件稳定性角度判断（样例组 12）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1193,7 +1193,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时源指针为 NULL。",
     "tags": [
       "rodata",
       "只读",
@@ -1215,7 +1215,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的初始化顺序角度判断（样例组 13）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1223,7 +1223,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "data段",
       "启动",
@@ -1244,7 +1244,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的边界条件角度判断（样例组 14）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -1252,7 +1252,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "bss",
       "启动",
@@ -1273,7 +1273,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "面试",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的失败路径角度判断（样例组 15）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -1281,7 +1281,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表插入回滚里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "栈帧",
@@ -1305,7 +1305,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的生命周期角度判断（样例组 16）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到头节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1313,7 +1313,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到节点池回收函数里，重点看首次调用时prev 是否为 NULL。",
     "tags": [
       "栈",
       "溢出",
@@ -1340,7 +1340,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的可移植性角度判断（样例组 17）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到配置表重新加载里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -1348,7 +1348,7 @@ module.exports = [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet"
     ],
     "answer": 3,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到缓冲区扩容里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "malloc",
       "动态内存",
@@ -1367,7 +1367,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "易错",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的中断安全角度判断（样例组 18）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到配置表重新加载里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 后继续通过 p 写内存，属于释放后使用",
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
@@ -1375,7 +1375,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 0,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到缓冲区扩容里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "悬空指针",
@@ -1395,7 +1395,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "面试",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的长期运行稳定性角度判断（样例组 19）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到配置表重新加载里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "free 后继续通过 p 写内存，属于释放后使用",
@@ -1403,7 +1403,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 1,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到单元测试内存检查里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "free",
       "内存管理",
@@ -1421,7 +1421,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的接口契约角度判断（样例组 20）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1429,7 +1429,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -1452,7 +1452,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "进阶",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的单元测试覆盖角度判断（样例组 21）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到配置表重新加载里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -1460,7 +1460,7 @@ module.exports = [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet"
     ],
     "answer": 3,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到单元测试内存检查里，重点看首次调用时分配失败后是否继续使用。",
     "tags": [
       "内存碎片",
       "堆",
@@ -1480,7 +1480,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的代码评审角度判断（样例组 22）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -1488,7 +1488,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "realloc",
       "动态内存",
@@ -1509,7 +1509,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的内存破坏定位角度判断（样例组 23）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到配置项读取里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1517,7 +1517,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "calloc",
       "动态内存",
@@ -1538,7 +1538,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的寄存器副作用角度判断（样例组 24）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1546,7 +1546,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "text",
       "段",
@@ -1568,7 +1568,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的编译优化影响角度判断（样例组 25）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1576,7 +1576,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "rodata",
       "只读",
@@ -1597,7 +1597,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的资源受限 MCU角度判断（样例组 26）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -1605,7 +1605,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时目标数组只剩一个字节。",
     "tags": [
       "data段",
       "启动",
@@ -1626,7 +1626,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的面试追问角度判断（样例组 27）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1634,7 +1634,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "bss",
       "启动",
@@ -1657,7 +1657,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "基础",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的调试复盘角度判断（样例组 28）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1665,7 +1665,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表节点删除函数里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "栈帧",
@@ -1692,7 +1692,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的量产固件稳定性角度判断（样例组 29）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到尾节点删除路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -1700,7 +1700,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到空链表遍历里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "溢出",
@@ -1726,7 +1726,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的初始化顺序角度判断（样例组 30）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到链表节点回收里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
       "在 malloc 前先 free(buf)",
@@ -1734,7 +1734,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到RTOS 任务异常退出里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "malloc",
       "动态内存",
@@ -1752,7 +1752,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "面试",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的边界条件角度判断（样例组 31）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到链表节点回收里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "free 后继续通过 p 写内存，属于释放后使用",
@@ -1760,7 +1760,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 1,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到RTOS 任务异常退出里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "悬空指针",
@@ -1778,7 +1778,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的失败路径角度判断（样例组 32）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到链表节点回收里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -1786,7 +1786,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 2,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到驱动初始化失败路径里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "内存管理",
@@ -1804,7 +1804,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的生命周期角度判断（样例组 33）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1812,7 +1812,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -1835,7 +1835,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "易错",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的可移植性角度判断（样例组 34）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到链表节点回收里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
       "在 malloc 前先 free(buf)",
@@ -1843,7 +1843,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到驱动初始化失败路径里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "内存碎片",
       "堆",
@@ -1863,7 +1863,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的中断安全角度判断（样例组 35）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1871,7 +1871,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "realloc",
       "动态内存",
@@ -1892,7 +1892,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的长期运行稳定性角度判断（样例组 36）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到日志前缀拼接里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1900,7 +1900,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "calloc",
       "动态内存",
@@ -1922,7 +1922,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的接口契约角度判断（样例组 37）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -1930,7 +1930,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "text",
       "段",
@@ -1951,7 +1951,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的单元测试覆盖角度判断（样例组 38）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -1959,7 +1959,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "rodata",
       "只读",
@@ -1980,7 +1980,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的代码评审角度判断（样例组 39）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -1988,7 +1988,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "data段",
       "启动",
@@ -2010,7 +2010,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的内存破坏定位角度判断（样例组 40）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2018,7 +2018,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时接收数据里包含内嵌 0。",
     "tags": [
       "bss",
       "启动",
@@ -2039,7 +2039,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "进阶",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的寄存器副作用角度判断（样例组 41）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到链表查找失败路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "prev->next 会被 free 自动改成后继节点",
@@ -2047,7 +2047,7 @@ module.exports = [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到单节点链表释放里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "栈帧",
@@ -2073,7 +2073,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的编译优化影响角度判断（样例组 42）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到链表查找失败路径里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -2081,7 +2081,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到头节点删除路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "溢出",
@@ -2105,7 +2105,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的资源受限 MCU角度判断（样例组 43）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到错误码提前返回里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
@@ -2113,7 +2113,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到协议帧缓存申请里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "malloc",
       "动态内存",
@@ -2132,7 +2132,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "基础",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的面试追问角度判断（样例组 44）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到错误码提前返回里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -2140,7 +2140,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 2,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到协议帧缓存申请里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "悬空指针",
@@ -2159,7 +2159,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的调试复盘角度判断（样例组 45）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到错误码提前返回里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -2167,7 +2167,7 @@ module.exports = [
       "free 后继续通过 p 写内存，属于释放后使用"
     ],
     "answer": 3,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到配置表重新加载里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "内存管理",
@@ -2186,7 +2186,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的量产固件稳定性角度判断（样例组 46）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -2194,7 +2194,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -2218,7 +2218,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "面试",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的初始化顺序角度判断（样例组 47）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到错误码提前返回里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "检查 malloc 返回值是否为 NULL，再决定是否调用 read_packet",
@@ -2226,7 +2226,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到配置表重新加载里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "内存碎片",
       "堆",
@@ -2246,7 +2246,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的边界条件角度判断（样例组 48）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2254,7 +2254,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "realloc",
       "动态内存",
@@ -2276,7 +2276,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的失败路径角度判断（样例组 49）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到协议字段转字符串里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2284,7 +2284,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "calloc",
       "动态内存",
@@ -2305,7 +2305,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的生命周期角度判断（样例组 50）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -2313,7 +2313,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "text",
       "段",
@@ -2334,7 +2334,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的可移植性角度判断（样例组 51）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -2342,7 +2342,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "rodata",
       "只读",
@@ -2364,7 +2364,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的中断安全角度判断（样例组 52）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2372,7 +2372,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "data段",
       "启动",
@@ -2394,7 +2394,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的长期运行稳定性角度判断（样例组 53）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2402,7 +2402,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到设备名保存里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "bss",
       "启动",
@@ -2423,7 +2423,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈帧",
     "difficulty": "易错",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈帧」的接口契约角度判断（样例组 54）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈帧」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到链表插入回滚里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
       "free 后读取结构体成员是安全的，只要不写入",
@@ -2431,7 +2431,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到尾节点删除路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "栈帧",
@@ -2455,7 +2455,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "栈溢出",
     "difficulty": "面试",
-    "question": "下面链表代码的主要问题是什么？\n请重点从「栈溢出」的单元测试覆盖角度判断（样例组 55）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "question": "在链表节点删除函数中看到下面这段和「栈溢出」有关的代码，最主要的风险是什么？\nvoid delete_after(Node *prev) {\n Node *victim = prev->next;\n free(victim);\n prev->next = victim->next;\n}\n请把它放到链表插入回滚里判断，尤其看首次调用时prev 是否为 NULL。",
     "options": [
       "free 后读取结构体成员是安全的，只要不写入",
       "释放 victim 后又访问 victim->next，应先保存 next 再 free",
@@ -2463,7 +2463,7 @@ module.exports = [
       "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。 真正会出问题的是：空链表、单节点、头尾节点以及释放前后的指针更新顺序是否被覆盖。 正确选项指出释放后使用；free 不会自动维护链表链接。\n补测时把代码放到链表查找失败路径里，重点看首次调用时prev->next 是否为空。",
     "tags": [
       "栈",
       "溢出",
@@ -2490,7 +2490,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "malloc失败",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「malloc失败」的代码评审角度判断（样例组 56）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「malloc失败」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到缓冲区扩容里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -2498,7 +2498,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到链表节点回收里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "malloc",
       "动态内存",
@@ -2517,7 +2517,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "free后使用",
     "difficulty": "进阶",
-    "question": "下面代码的主要风险是什么？\n请重点从「free后使用」的内存破坏定位角度判断（样例组 57）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「free后使用」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到缓冲区扩容里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
       "malloc 得到的 32 字节在 free 后仍归当前模块独占",
@@ -2525,7 +2525,7 @@ module.exports = [
       "free 后继续通过 p 写内存，属于释放后使用"
     ],
     "answer": 3,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到链表节点回收里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "悬空指针",
@@ -2544,7 +2544,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "重复释放",
     "difficulty": "易错",
-    "question": "下面代码的主要风险是什么？\n请重点从「重复释放」的寄存器副作用角度判断（样例组 58）。\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;",
+    "question": "在RTOS 任务异常退出中看到下面这段和「重复释放」有关的代码，最主要的风险是什么？\nuint8_t *p = malloc(32);\nfree(p);\n*p = 0x55;\n请把它放到缓冲区扩容里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "free 后继续通过 p 写内存，属于释放后使用",
       "free 会把 p 自动置为 NULL，所以 *p 写入是安全空操作",
@@ -2552,7 +2552,7 @@ module.exports = [
       "只写 1 字节不会破坏堆管理结构"
     ],
     "answer": 0,
-    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。正确选项指出 use-after-free。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "释放后原指针值可能仍在变量中，但它不再代表有效对象。 真正会出问题的是：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 正确选项指出 use-after-free。\n补测时把代码放到错误码提前返回里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "free",
       "内存管理",
@@ -2570,7 +2570,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存泄漏",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「内存泄漏」的编译优化影响角度判断（样例组 59）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「内存泄漏」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -2578,7 +2578,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到Bootloader 命令解析里，重点看首次调用时字符串函数是否越过缓冲区。",
     "tags": [
       "内存泄漏",
       "堆",
@@ -2601,7 +2601,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "内存碎片",
     "difficulty": "基础",
-    "question": "下面代码缺少哪一步最关键？\n请重点从「内存碎片」的资源受限 MCU角度判断（样例组 60）。\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);",
+    "question": "这段「内存碎片」代码还少一个关键保护，应该先补哪一步？\nuint8_t *buf = malloc(128);\nread_packet(buf, 128);\nfree(buf);\n请把它放到缓冲区扩容里判断，尤其看首次调用时分配失败后是否继续使用。",
     "options": [
       "在 malloc 前先 free(buf)",
       "把 128 改成 sizeof(buf)，这样能自动得到申请大小",
@@ -2609,7 +2609,7 @@ module.exports = [
       "删除 free(buf)，避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "动态内存题先看失败路径。malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "动态内存题先看失败路径。 这段代码缺的不是语法，而是要补上：指针先指向合法对象，再解引用；失败路径不能继续把无效地址当对象用。 malloc 可能返回 NULL；sizeof(buf) 是指针大小，删除 free 会制造泄漏。\n补测时把代码放到错误码提前返回里，重点看首次调用时提前返回是否遗漏释放。",
     "tags": [
       "内存碎片",
       "堆",
@@ -2629,7 +2629,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "realloc",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「realloc」的面试追问角度判断（样例组 61）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「realloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2637,7 +2637,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到串口接收缓冲区里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "realloc",
       "动态内存",
@@ -2659,7 +2659,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "calloc",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「calloc」的调试复盘角度判断（样例组 62）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「calloc」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到设备名保存里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -2667,7 +2667,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到命令行参数复制里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "calloc",
       "动态内存",
@@ -2688,7 +2688,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "text段",
     "difficulty": "面试",
-    "question": "这段代码的主要问题是什么？\n请重点从「text段」的量产固件稳定性角度判断（样例组 63）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「text段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
@@ -2696,7 +2696,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 1,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到AT 指令解析里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "text",
       "段",
@@ -2718,7 +2718,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "rodata段",
     "difficulty": "基础",
-    "question": "这段代码的主要问题是什么？\n请重点从「rodata段」的初始化顺序角度判断（样例组 64）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「rodata段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2726,7 +2726,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 2,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到配置项读取里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "rodata",
       "只读",
@@ -2748,7 +2748,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "data段",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「data段」的边界条件角度判断（样例组 65）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「data段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -2756,7 +2756,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到日志前缀拼接里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "data段",
       "启动",
@@ -2777,7 +2777,7 @@ module.exports = [
     "chapter": "内存与存储区",
     "topic": "bss段",
     "difficulty": "易错",
-    "question": "这段代码的主要问题是什么？\n请重点从「bss段」的失败路径角度判断（样例组 66）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「bss段」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n char name[16] = \"sensor\";\n return name;\n}\n请把它放到Bootloader 命令解析里判断，尤其看首次调用时输入长度刚好等于目标容量。",
     "options": [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针",
       "字符串 sensor 太短，必须填满 16 字节",
@@ -2785,7 +2785,7 @@ module.exports = [
       "把返回类型改成 void * 就能延长 name 生命周期"
     ],
     "answer": 0,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。\n补测时把代码放到协议字段转字符串里，重点看首次调用时复制后是否补了结束符。",
     "tags": [
       "bss",
       "启动",

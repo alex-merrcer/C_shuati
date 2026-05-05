@@ -12,7 +12,7 @@ module.exports = [
       "int start(void) { return 0; }"
     ],
     "answer": 0,
-    "explanation": "标准 C 程序通常从 main 函数开始执行，常见可移植写法是 int main(void) 或 int main(int argc, char *argv[])。返回 int 可以把程序结束状态交给运行环境。void main 不是标准 C 规定的通用形式。",
+    "explanation": "标准 C 程序通常从 main 函数开始执行，常见可移植写法是 int main(void) 或 int main(int argc, char *argv[])。 返回 int 可以把程序结束状态交给运行环境。 void main 不是标准 C 规定的通用形式。",
     "tags": [
       "main",
       "程序结构"
@@ -35,7 +35,7 @@ module.exports = [
       "long 一定比指针更大"
     ],
     "answer": 1,
-    "explanation": "C 标准没有把 int、long 等类型的字节数固定死，只规定了一些相对范围要求。嵌入式平台差异较大，涉及位宽明确的硬件数据时，应优先考虑 stdint.h 中的固定宽度整数类型。",
+    "explanation": "C 标准没有把 int、long 等类型的字节数固定死，只规定了一些相对范围要求。 嵌入式平台差异较大，涉及位宽明确的硬件数据时，应优先考虑 stdint.h 中的固定宽度整数类型。",
     "tags": [
       "基本类型",
       "可移植性"
@@ -58,7 +58,7 @@ module.exports = [
       "signed int 一定比 unsigned int 占用更多内存"
     ],
     "answer": 2,
-    "explanation": "无符号整数运算在超出范围时按模 2 的位宽回绕，这是 C 标准定义的行为。带符号整数溢出是未定义行为，不能依赖它得到某个固定结果。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "无符号整数运算在超出范围时按模 2 的位宽回绕，这是 C 标准定义的行为。 带符号整数溢出是未定义行为，不能依赖它得到某个固定结果。",
     "tags": [
       "signed",
       "unsigned",
@@ -82,7 +82,7 @@ module.exports = [
       "取决于编译器，可能为任意值"
     ],
     "answer": 0,
-    "explanation": "sizeof 的结果单位是 char 的大小，所以 sizeof(char) 按定义恒为 1。这里的 1 表示 1 个 char 单位，并不等价于某个平台上的物理存储细节。",
+    "explanation": "sizeof 的结果单位是 char 的大小，所以 sizeof(char) 按定义恒为 1。 这里的 1 表示 1 个 char 单位，并不等价于某个平台上的物理存储细节。",
     "tags": [
       "sizeof",
       "基本类型"
@@ -105,7 +105,7 @@ module.exports = [
       "这个表达式一定无法编译"
     ],
     "answer": 1,
-    "explanation": "相等运算符 == 的优先级高于按位与 &，所以 a & b == 0 会按 a & (b == 0) 理解。判断某些位是否全为 0 时应写成 (a & b) == 0，括号能避免误读。",
+    "explanation": "相等运算符 == 的优先级高于按位与 &，所以 a & b == 0 会按 a & (b == 0) 理解。 判断某些位是否全为 0 时应写成 (a & b) == 0，括号能避免误读。",
     "tags": [
       "优先级",
       "位运算"

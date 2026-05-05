@@ -1,7 +1,20 @@
 <view class="page">
+  <view class="subject-switch">
+    <view
+      class="subject-card{{item.className}}"
+      wx:for="{{subjects}}"
+      wx:key="key"
+      data-subject="{{item.key}}"
+      bindtap="switchSubject"
+    >
+      <view class="subject-name">{{item.name}}</view>
+      <view class="subject-desc">{{item.description}}</view>
+    </view>
+  </view>
+
   <view class="hero">
-    <view class="title">C语言刷题</view>
-    <view class="subtitle">个人 C 语言选择题刷题工具</view>
+    <view class="title">{{subjectTitle}}</view>
+    <view class="subtitle">{{subjectDescription}}</view>
     <view class="stats">
       <text>题库 {{totalCount}} 题</text>
       <text>错题 {{wrongCount}} 题</text>
@@ -33,6 +46,20 @@
     <button class="secondary-btn" bindtap="openWrongBook">错题本</button>
     <button class="danger-btn" bindtap="clearWrongBook">清空错题</button>
     <button class="neutral-btn" bindtap="clearStudyStats">清空学习统计</button>
+  </view>
+
+  <view class="section-title">题型专项</view>
+  <view class="type-grid">
+    <view
+      class="type-item"
+      wx:for="{{typeRows}}"
+      wx:key="type"
+      data-type="{{item.type}}"
+      bindtap="startType"
+    >
+      <view class="type-name">{{item.label}}</view>
+      <view class="type-meta">{{item.count}} 题</view>
+    </view>
   </view>
 
   <view class="section-title">按章节刷题</view>

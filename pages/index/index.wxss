@@ -3,6 +3,40 @@
   padding: 40rpx 28rpx 64rpx;
 }
 
+.subject-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  margin-bottom: 22rpx;
+}
+
+.subject-card {
+  min-height: 126rpx;
+  padding: 20rpx;
+  border: 2rpx solid #d0d5dd;
+  border-radius: 14rpx;
+  background: #ffffff;
+}
+
+.subject-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.subject-name {
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.subject-desc {
+  margin-top: 8rpx;
+  color: #667085;
+  font-size: 24rpx;
+  line-height: 1.45;
+}
+
 .hero {
   padding: 28rpx 28rpx 32rpx;
   border-radius: 16rpx;
@@ -109,10 +143,37 @@
 }
 
 .section-title {
-  margin-bottom: 16rpx;
+  margin: 34rpx 0 16rpx;
   color: #111827;
   font-size: 32rpx;
   font-weight: 700;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.type-item {
+  min-height: 104rpx;
+  padding: 20rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 14rpx;
+  background: #ffffff;
+}
+
+.type-name {
+  color: #1f2937;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.type-meta {
+  margin-top: 8rpx;
+  color: #667085;
+  font-size: 24rpx;
 }
 
 .chapter-list {

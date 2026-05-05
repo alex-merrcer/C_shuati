@@ -4,7 +4,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "结构体大小与内存对齐",
     "difficulty": "进阶",
-    "question": "这段代码的主要问题是什么？\n请重点从「结构体大小与内存对齐」的调试复盘角度判断（样例组 15）。\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
+    "question": "在串口接收缓冲区中看到下面这段和「结构体大小与内存对齐」有关的代码，最主要的风险是什么？\nchar *make_name(void) {\n    char name[16] = \"sensor\";\n    return name;\n}",
     "options": [
       "字符串 sensor 太短，必须填满 16 字节",
       "局部数组会自动搬到堆上，所以返回地址安全",
@@ -12,7 +12,7 @@ module.exports = [
       "返回了局部自动数组的地址，函数返回后该地址变成悬空指针"
     ],
     "answer": 3,
-    "explanation": "局部自动对象在函数返回后生命周期结束。类型转换不能改变存储期。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
+    "explanation": "局部自动对象在函数返回后生命周期结束。 真正会出问题的是：目标缓冲区容量、结束符和源数据长度是否同时受控。 类型转换不能改变存储期。",
     "tags": [
       "结构体",
       "内存对齐",
@@ -33,7 +33,7 @@ module.exports = [
     "chapter": "结构体、共用体与枚举",
     "topic": "enum",
     "difficulty": "基础",
-    "question": "关于这段代码的理解，哪项正确？\n请重点从「enum」的量产固件稳定性角度判断（样例组 16）。\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
+    "question": "读完这段「enum」代码，哪项判断正确？\nenum State { IDLE = 0, BUSY = 3 };\nenum State s = BUSY;\nint raw = s;",
     "options": [
       "raw 的值为 3，枚举常量可以显式指定取值",
       "BUSY 一定自动等于 1，不能显式赋值",
@@ -41,7 +41,7 @@ module.exports = [
       "enum 不能用于状态机代码"
     ],
     "answer": 0,
-    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
+    "explanation": "枚举适合表达状态名和值的关系，显式赋值是合法的；状态机转移仍要由逻辑约束。 读这段代码时要盯住：结构体布局、填充字节、对齐和字节序假设是否写清楚。\n补测时把代码放到协议帧头解析里，重点看首次调用时对齐假设是否跨平台成立。",
     "tags": [
       "enum",
       "状态机",

@@ -1,20 +1,15 @@
 const questions = require('../../data/questions')
 const storage = require('../../utils/storage')
 
-function getCounter(source) {
-  const value = source && typeof source === 'object' ? source : {}
-
-  return {
-    answered: Number(value.answered) || 0,
-    correct: Number(value.correct) || 0,
-    wrong: Number(value.wrong) || 0
-  }
+const SUBJECT_NAMES = {
+  c: 'C语言',
+  stm32: 'STM32'
 }
 
-function getQuestionCountMap(field) {
+function getQuestionCountMap(questionList, field) {
   const map = {}
 
-  questions.forEach(function (question) {
+  questionList.forEach(function (question) {
     if (!map[question[field]]) {
       map[question[field]] = 0
     }
@@ -30,9 +25,9 @@ function getSortedNames(map) {
   })
 }
 
-function buildRows(countMap, statsMap) {
+function buildRows(countMap, statsMap, subject) {
   return getSortedNames(countMap).map(function (name) {
-    const stats = getCounter(statsMap[name])
+    const stats = storage.getScopedCounter(statsMap, subject, name)
     const hasData = stats.answered > 0
 
     return {
@@ -64,8 +59,18 @@ function formatTime(timestamp) {
   return date.getFullYear() + '-' + month + '-' + day + ' ' + hour + ':' + minute
 }
 
+function getSubjectQuestions(subject) {
+  const normalizedSubject = storage.normalizeSubject(subject)
+
+  return questions.filter(function (question) {
+    return storage.normalizeSubject(question.subject) === normalizedSubject
+  })
+}
+
 Page({
   data: {
+    subject: 'c',
+    subjectName: 'C语言',
     overview: {
       totalAnswered: 0,
       totalCorrect: 0,
@@ -81,31 +86,42 @@ Page({
     topicRows: []
   },
 
+  onLoad(options) {
+    const subject = storage.normalizeSubject(options.subject || 'c')
+    this.setData({
+      subject: subject,
+      subjectName: SUBJECT_NAMES[subject] || 'C语言'
+    })
+  },
+
   onShow() {
     this.loadStats()
   },
 
   loadStats() {
+    const subject = this.data.subject
     const stats = storage.getStudyStats()
     const todayKey = storage.getTodayKey()
-    const todayStats = getCounter(stats.dailyStats[todayKey])
-    const chapterCountMap = getQuestionCountMap('chapter')
-    const topicCountMap = getQuestionCountMap('topic')
+    const subjectStats = storage.getSubjectStats(stats, subject)
+    const todayStats = storage.getSubjectDailyStats(stats, subject, todayKey)
+    const subjectQuestions = getSubjectQuestions(subject)
+    const chapterCountMap = getQuestionCountMap(subjectQuestions, 'chapter')
+    const topicCountMap = getQuestionCountMap(subjectQuestions, 'topic')
 
     this.setData({
       overview: {
-        totalAnswered: stats.totalAnswered,
-        totalCorrect: stats.totalCorrect,
-        totalWrong: stats.totalWrong,
-        totalAccuracyText: storage.getAccuracyText(stats.totalCorrect, stats.totalAnswered),
+        totalAnswered: subjectStats.answered,
+        totalCorrect: subjectStats.correct,
+        totalWrong: subjectStats.wrong,
+        totalAccuracyText: storage.getAccuracyText(subjectStats.correct, subjectStats.answered),
         todayAnswered: todayStats.answered,
         todayCorrect: todayStats.correct,
         todayWrong: todayStats.wrong,
         todayAccuracyText: storage.getAccuracyText(todayStats.correct, todayStats.answered),
         lastStudyText: formatTime(stats.lastStudyAt)
       },
-      chapterRows: buildRows(chapterCountMap, stats.chapterStats),
-      topicRows: buildRows(topicCountMap, stats.topicStats)
+      chapterRows: buildRows(chapterCountMap, stats.chapterStats, subject),
+      topicRows: buildRows(topicCountMap, stats.topicStats, subject)
     })
   }
 })

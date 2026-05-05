@@ -3,6 +3,7 @@ const path = require('path')
 const questionPath = path.join(__dirname, '..', 'data', 'questions')
 const requiredFields = [
   'id',
+  'subject',
   'chapter',
   'knowledgeId',
   'topic',
@@ -16,8 +17,9 @@ const requiredFields = [
   'tags',
   'reviewStatus'
 ]
+const allowedSubjects = ['c', 'stm32']
 const allowedDifficulties = ['基础', '进阶', '易错', '面试']
-const allowedTypes = [
+const cAllowedTypes = [
   'concept',
   'code_read',
   'bug_fix',
@@ -27,7 +29,15 @@ const allowedTypes = [
   'scenario_code',
   'interview'
 ]
-const codeRequiredTypes = [
+const stm32AllowedTypes = [
+  'concept',
+  'scenario',
+  'bug_fix',
+  'calculation',
+  'code_read',
+  'missing_step'
+]
+const cCodeRequiredTypes = [
   'code_read',
   'bug_fix',
   'fill_blank',
@@ -35,6 +45,11 @@ const codeRequiredTypes = [
   'calculation',
   'scenario_code'
 ]
+const stm32CodeRequiredTypes = [
+  'code_read',
+  'missing_step'
+]
+const stm32BannedPattern = /\bHAL\b|\bLL\b|CubeMX|USB|传感器模块/
 const errors = []
 
 let questions
@@ -52,6 +67,10 @@ if (!Array.isArray(questions)) {
 }
 
 const idSet = {}
+const subjectCount = {
+  c: 0,
+  stm32: 0
+}
 
 questions.forEach(function (question, index) {
   const label = question && question.id ? question.id : '第 ' + (index + 1) + ' 题'
@@ -83,12 +102,38 @@ questions.forEach(function (question, index) {
     idSet[question.id] = true
   }
 
+  if (allowedSubjects.indexOf(question.subject) === -1) {
+    errors.push({
+      id: label,
+      reason: 'subject 只能是：' + allowedSubjects.join('、')
+    })
+  } else {
+    subjectCount[question.subject] += 1
+  }
+
+  if (question.id && /^s\d+/.test(question.id) && question.subject !== 'stm32') {
+    errors.push({
+      id: label,
+      reason: 'STM32 题目 id 以 s 开头时 subject 必须是 stm32'
+    })
+  }
+
+  if (question.id && /^c\d+/.test(question.id) && question.subject !== 'c') {
+    errors.push({
+      id: label,
+      reason: 'C 语言题目 id 以 c 开头时 subject 必须是 c'
+    })
+  }
+
   if (typeof question.knowledgeId !== 'string' || question.knowledgeId.trim() === '') {
     errors.push({
       id: label,
       reason: 'knowledgeId 不能为空'
     })
   }
+
+  const allowedTypes = question.subject === 'stm32' ? stm32AllowedTypes : cAllowedTypes
+  const codeRequiredTypes = question.subject === 'stm32' ? stm32CodeRequiredTypes : cCodeRequiredTypes
 
   if (allowedTypes.indexOf(question.type) === -1) {
     errors.push({
@@ -177,7 +222,21 @@ questions.forEach(function (question, index) {
       reason: 'reviewStatus 当前应统一标记为“待复核”'
     })
   }
+
+  if (question.subject === 'stm32' && stm32BannedPattern.test(JSON.stringify(question))) {
+    errors.push({
+      id: label,
+      reason: 'STM32 题目中不能出现 HAL、LL、CubeMX、USB 或传感器模块专项内容'
+    })
+  }
 })
+
+if (subjectCount.stm32 < 800 || subjectCount.stm32 > 1000) {
+  errors.push({
+    id: 'stm32',
+    reason: 'STM32 题量应在 800 到 1000 道之间，实际为 ' + subjectCount.stm32 + ' 道'
+  })
+}
 
 if (errors.length > 0) {
   console.error('题库校验失败，共 ' + errors.length + ' 个问题：')
@@ -187,4 +246,4 @@ if (errors.length > 0) {
   process.exit(1)
 }
 
-console.log('题库校验通过，共 ' + questions.length + ' 道题。')
+console.log('题库校验通过，共 ' + questions.length + ' 道题。C语言 ' + subjectCount.c + ' 道，STM32 ' + subjectCount.stm32 + ' 道。')
