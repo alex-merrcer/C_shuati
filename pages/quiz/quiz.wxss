@@ -1,0 +1,156 @@
+.page {
+  min-height: 100vh;
+  padding: 28rpx 28rpx 60rpx;
+}
+
+.progress {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18rpx;
+  color: #475467;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.question-card {
+  padding: 26rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 28rpx rgba(37, 51, 76, 0.08);
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 22rpx;
+}
+
+.meta {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  color: #475467;
+  background: #f1f5f9;
+  font-size: 24rpx;
+}
+
+.difficulty {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.question-text {
+  color: #111827;
+  font-size: 34rpx;
+  font-weight: 600;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.option-card {
+  display: flex;
+  gap: 18rpx;
+  min-height: 96rpx;
+  padding: 22rpx;
+  border: 3rpx solid #d0d5dd;
+  border-radius: 14rpx;
+  background: #ffffff;
+}
+
+.option-card.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.option-card.correct {
+  border-color: #16a34a;
+  background: #ecfdf3;
+}
+
+.option-card.wrong {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #344054;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.option-card.selected .option-label {
+  background: #2563eb;
+}
+
+.option-card.correct .option-label {
+  background: #16a34a;
+}
+
+.option-card.wrong .option-label {
+  background: #dc2626;
+}
+
+.option-text {
+  flex: 1;
+  color: #1f2937;
+  font-size: 30rpx;
+  line-height: 1.6;
+}
+
+.answer-panel {
+  margin-top: 28rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 28rpx rgba(37, 51, 76, 0.08);
+}
+
+.answer-line {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding-bottom: 18rpx;
+  margin-bottom: 18rpx;
+  border-bottom: 2rpx solid #eef2f7;
+}
+
+.answer-label {
+  color: #667085;
+  font-size: 26rpx;
+}
+
+.answer-content {
+  color: #dc2626;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.explanation-title {
+  margin-bottom: 10rpx;
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.explanation-text {
+  color: #344054;
+  font-size: 29rpx;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}

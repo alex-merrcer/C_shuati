@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="hero">
+    <view class="title">C语言刷题</view>
+    <view class="subtitle">个人 C 语言选择题刷题工具</view>
+    <view class="stats">
+      <text>题库 {{totalCount}} 题</text>
+      <text>错题 {{wrongCount}} 题</text>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="primary-btn" bindtap="startRandom">随机刷题</button>
+    <button class="secondary-btn" bindtap="openWrongBook">错题本</button>
+    <button class="danger-btn" bindtap="clearWrongBook">清空错题</button>
+  </view>
+
+  <view class="section-title">按章节刷题</view>
+  <view class="chapter-list">
+    <view
+      class="chapter-item"
+      wx:for="{{chapters}}"
+      wx:key="name"
+      data-chapter="{{item.name}}"
+      bindtap="startChapter"
+    >
+      <view class="chapter-name">{{item.name}}</view>
+      <view class="chapter-meta">{{item.count}} 题</view>
+    </view>
+  </view>
+</view>

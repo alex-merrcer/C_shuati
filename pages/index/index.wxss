@@ -1,0 +1,106 @@
+.page {
+  min-height: 100vh;
+  padding: 40rpx 28rpx 64rpx;
+}
+
+.hero {
+  padding: 28rpx 28rpx 32rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 28rpx rgba(37, 51, 76, 0.08);
+}
+
+.title {
+  color: #0f172a;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.subtitle {
+  margin-top: 12rpx;
+  color: #667085;
+  font-size: 28rpx;
+}
+
+.stats {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 24rpx;
+  color: #475467;
+  font-size: 26rpx;
+}
+
+.stats text {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: #eef4ff;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18rpx;
+  margin: 28rpx 0 36rpx;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.primary-btn {
+  background: #2563eb;
+}
+
+.secondary-btn {
+  background: #0f766e;
+}
+
+.danger-btn {
+  background: #dc2626;
+}
+
+.section-title {
+  margin-bottom: 16rpx;
+  color: #111827;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.chapter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  min-height: 108rpx;
+  padding: 22rpx 24rpx;
+  border: 2rpx solid #e5e7eb;
+  border-radius: 14rpx;
+  background: #ffffff;
+}
+
+.chapter-name {
+  flex: 1;
+  color: #1f2937;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.chapter-meta {
+  flex-shrink: 0;
+  color: #667085;
+  font-size: 26rpx;
+}

@@ -1,0 +1,43 @@
+<view
+  class="page"
+  wx:if="{{currentQuestion}}"
+  bindtouchstart="handleTouchStart"
+  bindtouchend="handleTouchEnd"
+>
+  <view class="progress">
+    <text>{{currentIndex + 1}} / {{totalCount}}</text>
+  </view>
+
+  <view class="question-card">
+    <view class="meta-row">
+      <text class="meta">{{currentQuestion.chapter}}</text>
+      <text class="meta">{{currentQuestion.topic}}</text>
+      <text class="meta difficulty">{{currentQuestion.difficulty}}</text>
+    </view>
+    <view class="question-text">{{currentQuestion.question}}</view>
+  </view>
+
+  <view class="options">
+    <view
+      class="option-card{{item.className}}"
+      wx:for="{{optionItems}}"
+      wx:key="index"
+      data-index="{{item.index}}"
+      bindtap="selectOption"
+    >
+      <text class="option-label">{{item.label}}</text>
+      <text class="option-text">{{item.text}}</text>
+    </view>
+  </view>
+
+  <view class="answer-panel" wx:if="{{submitted}}">
+    <view class="answer-line" wx:if="{{!isCorrect}}">
+      <text class="answer-label">正确答案</text>
+      <text class="answer-content">{{correctAnswerText}}</text>
+    </view>
+    <view class="explanation">
+      <view class="explanation-title">详细解析</view>
+      <view class="explanation-text">{{currentQuestion.explanation}}</view>
+    </view>
+  </view>
+</view>
