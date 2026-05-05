@@ -4,2399 +4,3649 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "基础",
-    "question": "关于「数组越界」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的接口契约角度判断（样例组 0）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "C 会自动检查数组越界并报异常",
-      "a[n] 是长度为 n 的数组最后一个元素",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "数组越界最多只会读到随机值，不会影响写入"
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 2,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c195",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "进阶",
-    "question": "关于「数组大小计算」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的单元测试覆盖角度判断（样例组 1）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "元素个数等于 sizeof(arr)",
-      "数组大小可以靠 strlen 计算所有类型",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c196",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "易错",
-    "question": "关于「数组作为函数参数」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的代码评审角度判断（样例组 2）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "数组形参不能修改调用者数组元素",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c197",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "面试",
-    "question": "关于「二维数组传参」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的内存破坏定位角度判断（样例组 3）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c198",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "基础",
-    "question": "关于「柔性数组成员」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的寄存器副作用角度判断（样例组 4）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c199",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "进阶",
-    "question": "关于「字符串结束符」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的编译优化影响角度判断（样例组 5）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c200",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "易错",
-    "question": "关于「strlen」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的资源受限 MCU角度判断（样例组 6）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c201",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "面试",
-    "question": "关于「strcpy」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的面试追问角度判断（样例组 7）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcpy 会自动扩容目标数组"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 1,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "interview",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c202",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "基础",
-    "question": "关于「strncpy」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的调试复盘角度判断（样例组 8）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strncpy 永远会补 \\0",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "strncpy 会返回复制后的长度"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c203",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "进阶",
-    "question": "关于「strcat」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的量产固件稳定性角度判断（样例组 9）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcat 会知道目标数组剩余容量",
-      "strcat 可用于未初始化数组",
-      "strcat 不会写入结尾 \\0",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c204",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "易错",
-    "question": "关于「strcmp」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的初始化顺序角度判断（样例组 10）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "strcmp 返回两个字符串不同字符的固定差值供业务使用",
-      "strcmp 可以比较非 \\0 结束的任意内存块",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c205",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "面试",
-    "question": "关于「memcpy」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的边界条件角度判断（样例组 11）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memcpy 会根据 \\0 停止复制",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c206",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "基础",
-    "question": "关于「memmove」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的失败路径角度判断（样例组 12）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "memmove 可以处理源和目的重叠的内存复制",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c207",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "进阶",
-    "question": "关于「memset」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的生命周期角度判断（样例组 13）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c208",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "易错",
-    "question": "关于「snprintf」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的可移植性角度判断（样例组 14）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c209",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "面试",
-    "question": "代码评审时看到「数组越界」相关实现，优先检查哪一点？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的中断安全角度判断（样例组 15）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "a[4] 是数组最后一个元素",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 1,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c210",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "基础",
-    "question": "代码评审时看到「数组大小计算」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的长期运行稳定性角度判断（样例组 16）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "任何地方 sizeof(arr) 都能得到元素个数"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c211",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "进阶",
-    "question": "代码评审时看到「数组作为函数参数」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的接口契约角度判断（样例组 17）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "形参 int a[] 会完整复制数组",
-      "函数内 sizeof(a) 是原数组总字节数",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c212",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "易错",
-    "question": "代码评审时看到「二维数组传参」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的单元测试覆盖角度判断（样例组 18）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "二维数组可以传给任意 int **",
-      "列数不重要，运行时会自动识别",
-      "int ** 与 int [][4] 完全等价"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c213",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "面试",
-    "question": "代码评审时看到「柔性数组成员」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的代码评审角度判断（样例组 19）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "sizeof 会包含运行时所有柔性数组元素",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "柔性数组成员不需要额外分配空间",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c214",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "基础",
-    "question": "代码评审时看到「字符串结束符」相关实现，优先检查哪一点？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的内存破坏定位角度判断（样例组 20）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "字符 0 和空字符在语义上完全一样",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c215",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "进阶",
-    "question": "代码评审时看到「strlen」相关实现，优先检查哪一点？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的寄存器副作用角度判断（样例组 21）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c216",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "易错",
-    "question": "代码评审时看到「strcpy」相关实现，优先检查哪一点？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的编译优化影响角度判断（样例组 22）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 0,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "填空选择",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c217",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "面试",
-    "question": "代码评审时看到「strncpy」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的资源受限 MCU角度判断（样例组 23）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c218",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "基础",
-    "question": "代码评审时看到「strcat」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的面试追问角度判断（样例组 24）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "interview",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c219",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "进阶",
-    "question": "代码评审时看到「strcmp」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的调试复盘角度判断（样例组 25）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcmp 相等时返回 1",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c220",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "易错",
-    "question": "代码评审时看到「memcpy」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的量产固件稳定性角度判断（样例组 26）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "memcpy 会自动处理重叠区域",
-      "memcpy 只能复制字符串"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c221",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "面试",
-    "question": "代码评审时看到「memmove」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的初始化顺序角度判断（样例组 27）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memmove 比 memcpy 少一个长度参数",
-      "memmove 可以处理源和目的重叠的内存复制",
-      "memmove 遇到 \\0 会停止",
-      "memmove 只能移动指针不复制数据"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c222",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "基础",
-    "question": "代码评审时看到「memset」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的边界条件角度判断（样例组 28）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memset 能调用构造函数",
-      "memset 会自动检查数组长度",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c223",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "进阶",
-    "question": "代码评审时看到「snprintf」相关实现，优先检查哪一点？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的失败路径角度判断（样例组 29）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "snprintf 不能用于嵌入式项目",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c224",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "易错",
-    "question": "下列关于「数组越界」的理解，哪项最不容易埋坑？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的生命周期角度判断（样例组 30）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 0,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c225",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "面试",
-    "question": "下列关于「数组大小计算」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的可移植性角度判断（样例组 31）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c226",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "基础",
-    "question": "下列关于「数组作为函数参数」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的中断安全角度判断（样例组 32）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c227",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "进阶",
-    "question": "下列关于「二维数组传参」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的长期运行稳定性角度判断（样例组 33）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c228",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "易错",
-    "question": "下列关于「柔性数组成员」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的接口契约角度判断（样例组 34）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "柔性数组成员可以放在结构体中间"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c229",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "面试",
-    "question": "下列关于「字符串结束符」的理解，哪项最不容易埋坑？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的单元测试覆盖角度判断（样例组 35）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "字符串长度等于数组容量",
-      "\\0 会自动防止所有越界"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c230",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "基础",
-    "question": "下列关于「strlen」的理解，哪项最不容易埋坑？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的代码评审角度判断（样例组 36）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "strlen 会返回数组总容量",
-      "strlen 会统计结尾 \\0",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "strlen 可以安全处理任意未初始化缓冲区"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c231",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "进阶",
-    "question": "下列关于「strcpy」的理解，哪项最不容易埋坑？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的内存破坏定位角度判断（样例组 37）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "strcpy 会自动截断避免越界",
-      "strcpy 比 memcpy 一定更适合所有数据复制",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围"
     ],
     "answer": 3,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c232",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "易错",
-    "question": "下列关于「strncpy」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的寄存器副作用角度判断（样例组 38）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "strncpy 可替代所有字符串格式化场景",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c233",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "面试",
-    "question": "下列关于「strcat」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的编译优化影响角度判断（样例组 39）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "sprintf",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c234",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "基础",
-    "question": "下列关于「strcmp」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的资源受限 MCU角度判断（样例组 40）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c235",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "进阶",
-    "question": "下列关于「memcpy」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的面试追问角度判断（样例组 41）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "interview",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c236",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "易错",
-    "question": "下列关于「memmove」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的调试复盘角度判断（样例组 42）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memmove 可以处理源和目的重叠的内存复制",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c237",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "面试",
-    "question": "下列关于「memset」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的量产固件稳定性角度判断（样例组 43）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "memset 按元素类型填充"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c238",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "基础",
-    "question": "下列关于「snprintf」的理解，哪项最不容易埋坑？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的初始化顺序角度判断（样例组 44）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "sprintf 会自动知道目标数组容量",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "snprintf 不需要检查返回值"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c239",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「数组越界」，哪项判断更可靠？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的边界条件角度判断（样例组 45）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "C 会自动检查数组越界并报异常",
-      "a[n] 是长度为 n 的数组最后一个元素",
-      "数组越界最多只会读到随机值，不会影响写入",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间"
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险"
     ],
     "answer": 3,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c240",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「数组大小计算」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的失败路径角度判断（样例组 46）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "元素个数等于 sizeof(arr)",
-      "数组大小可以靠 strlen 计算所有类型",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c241",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「数组作为函数参数」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的生命周期角度判断（样例组 47）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "数组形参不能修改调用者数组元素",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c242",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「二维数组传参」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的可移植性角度判断（样例组 48）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "行指针",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c243",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「柔性数组成员」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的中断安全角度判断（样例组 49）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c244",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「字符串结束符」，哪项判断更可靠？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的长期运行稳定性角度判断（样例组 50）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c245",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「strlen」，哪项判断更可靠？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的接口契约角度判断（样例组 51）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c246",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「strcpy」，哪项判断更可靠？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的单元测试覆盖角度判断（样例组 52）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "strcpy 会自动扩容目标数组"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 2,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c247",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「strncpy」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的代码评审角度判断（样例组 53）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strncpy 永远会补 \\0",
-      "strncpy 会返回复制后的长度",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c248",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「strcat」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的内存破坏定位角度判断（样例组 54）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "strcat 会知道目标数组剩余容量",
-      "strcat 可用于未初始化数组",
-      "strcat 不会写入结尾 \\0"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c249",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「strcmp」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的寄存器副作用角度判断（样例组 55）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcmp 返回两个字符串不同字符的固定差值供业务使用",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "strcmp 可以比较非 \\0 结束的任意内存块",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c250",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「memcpy」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的编译优化影响角度判断（样例组 56）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memcpy 会根据 \\0 停止复制",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c251",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「memmove」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的资源受限 MCU角度判断（样例组 57）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "memmove 可以处理源和目的重叠的内存复制"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c252",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「memset」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的面试追问角度判断（样例组 58）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "interview",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c253",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「snprintf」，哪项判断更可靠？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的调试复盘角度判断（样例组 59）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c254",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "基础",
-    "question": "遇到「数组越界」相关 bug 时，哪项排查方向最合理？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的量产固件稳定性角度判断（样例组 60）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 2,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c255",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "进阶",
-    "question": "遇到「数组大小计算」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的初始化顺序角度判断（样例组 61）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "任何地方 sizeof(arr) 都能得到元素个数",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c256",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "易错",
-    "question": "遇到「数组作为函数参数」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的边界条件角度判断（样例组 62）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "形参 int a[] 会完整复制数组",
-      "函数内 sizeof(a) 是原数组总字节数"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c257",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "面试",
-    "question": "遇到「二维数组传参」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的失败路径角度判断（样例组 63）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "二维数组可以传给任意 int **",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "列数不重要，运行时会自动识别",
-      "int ** 与 int [][4] 完全等价"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c258",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "基础",
-    "question": "遇到「柔性数组成员」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的生命周期角度判断（样例组 64）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "sizeof 会包含运行时所有柔性数组元素",
-      "柔性数组成员不需要额外分配空间",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c259",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "进阶",
-    "question": "遇到「字符串结束符」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的可移植性角度判断（样例组 65）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "字符 0 和空字符在语义上完全一样",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c260",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "易错",
-    "question": "遇到「strlen」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的中断安全角度判断（样例组 66）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c261",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "面试",
-    "question": "遇到「strcpy」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的长期运行稳定性角度判断（样例组 67）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 1,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c262",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "基础",
-    "question": "遇到「strncpy」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的接口契约角度判断（样例组 68）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c263",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "进阶",
-    "question": "遇到「strcat」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的单元测试覆盖角度判断（样例组 69）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c264",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "易错",
-    "question": "遇到「strcmp」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的代码评审角度判断（样例组 70）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcmp 相等时返回 1"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "填空选择",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c265",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "面试",
-    "question": "遇到「memcpy」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的内存破坏定位角度判断（样例组 71）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "memcpy 会自动处理重叠区域",
-      "memcpy 只能复制字符串"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c266",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "基础",
-    "question": "遇到「memmove」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的寄存器副作用角度判断（样例组 72）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memmove 比 memcpy 少一个长度参数",
-      "memmove 遇到 \\0 会停止",
-      "memmove 可以处理源和目的重叠的内存复制",
-      "memmove 只能移动指针不复制数据"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c267",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "进阶",
-    "question": "遇到「memset」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的编译优化影响角度判断（样例组 73）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memset 能调用构造函数",
-      "memset 会自动检查数组长度",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c268",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "易错",
-    "question": "遇到「snprintf」相关 bug 时，哪项排查方向最合理？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的资源受限 MCU角度判断（样例组 74）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "snprintf 不能用于嵌入式项目",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c269",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "面试",
-    "question": "为了让「数组越界」更可维护，哪项做法更推荐？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的面试追问角度判断（样例组 75）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "a[4] 是数组最后一个元素",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 1,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "interview"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c270",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "基础",
-    "question": "为了让「数组大小计算」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的调试复盘角度判断（样例组 76）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c271",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "进阶",
-    "question": "为了让「数组作为函数参数」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的量产固件稳定性角度判断（样例组 77）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c272",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "易错",
-    "question": "为了让「二维数组传参」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的初始化顺序角度判断（样例组 78）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c273",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "面试",
-    "question": "为了让「柔性数组成员」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的边界条件角度判断（样例组 79）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "柔性数组成员可以放在结构体中间"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c274",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "基础",
-    "question": "为了让「字符串结束符」更可维护，哪项做法更推荐？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的失败路径角度判断（样例组 80）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "字符串长度等于数组容量",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "\\0 会自动防止所有越界"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c275",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "进阶",
-    "question": "为了让「strlen」更可维护，哪项做法更推荐？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的生命周期角度判断（样例组 81）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "strlen 会返回数组总容量",
-      "strlen 会统计结尾 \\0",
-      "strlen 可以安全处理任意未初始化缓冲区",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
     "answer": 3,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c276",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "易错",
-    "question": "为了让「strcpy」更可维护，哪项做法更推荐？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的可移植性角度判断（样例组 82）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "strcpy 会自动截断避免越界",
-      "strcpy 比 memcpy 一定更适合所有数据复制",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 0,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c277",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "面试",
-    "question": "为了让「strncpy」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的中断安全角度判断（样例组 83）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strncpy 可替代所有字符串格式化场景",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c278",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "基础",
-    "question": "为了让「strcat」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的长期运行稳定性角度判断（样例组 84）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c279",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "进阶",
-    "question": "为了让「strcmp」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的接口契约角度判断（样例组 85）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c280",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "易错",
-    "question": "为了让「memcpy」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的单元测试覆盖角度判断（样例组 86）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c281",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "面试",
-    "question": "为了让「memmove」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的代码评审角度判断（样例组 87）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "memmove 可以处理源和目的重叠的内存复制",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c282",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "基础",
-    "question": "为了让「memset」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的内存破坏定位角度判断（样例组 88）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "memset 按元素类型填充"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c283",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "进阶",
-    "question": "为了让「snprintf」更可维护，哪项做法更推荐？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的寄存器副作用角度判断（样例组 89）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "sprintf 会自动知道目标数组容量",
-      "snprintf 不需要检查返回值",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c284",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "易错",
-    "question": "学习「数组越界」时，哪项结论更适合记住？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的编译优化影响角度判断（样例组 90）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "数组合法下标必须落在 0 到 元素个数减 1 之间",
-      "C 会自动检查数组越界并报异常",
-      "a[n] 是长度为 n 的数组最后一个元素",
-      "数组越界最多只会读到随机值，不会影响写入"
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险",
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素"
     ],
     "answer": 0,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c285",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "面试",
-    "question": "学习「数组大小计算」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的资源受限 MCU角度判断（样例组 91）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "元素个数等于 sizeof(arr)",
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "数组大小可以靠 strlen 计算所有类型",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c286",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "基础",
-    "question": "学习「数组作为函数参数」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的面试追问角度判断（样例组 92）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "数组形参不能修改调用者数组元素",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "interview",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c287",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "进阶",
-    "question": "学习「二维数组传参」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的调试复盘角度判断（样例组 93）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c288",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "易错",
-    "question": "学习「柔性数组成员」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的量产固件稳定性角度判断（样例组 94）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c289",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "面试",
-    "question": "学习「字符串结束符」时，哪项结论更适合记住？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的初始化顺序角度判断（样例组 95）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c290",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "基础",
-    "question": "学习「strlen」时，哪项结论更适合记住？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的边界条件角度判断（样例组 96）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 2,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c291",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "进阶",
-    "question": "学习「strcpy」时，哪项结论更适合记住？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的失败路径角度判断（样例组 0）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcpy 会自动扩容目标数组",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围"
     ],
     "answer": 3,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c292",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "易错",
-    "question": "学习「strncpy」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的生命周期角度判断（样例组 1）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strncpy 永远会补 \\0",
-      "strncpy 会返回复制后的长度"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c293",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "面试",
-    "question": "学习「strcat」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的可移植性角度判断（样例组 2）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcat 会知道目标数组剩余容量",
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "strcat 可用于未初始化数组",
-      "strcat 不会写入结尾 \\0"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c294",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "基础",
-    "question": "学习「strcmp」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的中断安全角度判断（样例组 3）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcmp 返回两个字符串不同字符的固定差值供业务使用",
-      "strcmp 可以比较非 \\0 结束的任意内存块",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c295",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "进阶",
-    "question": "学习「memcpy」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的长期运行稳定性角度判断（样例组 4）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memcpy 会根据 \\0 停止复制",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c296",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "易错",
-    "question": "学习「memmove」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的接口契约角度判断（样例组 5）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memmove 可以处理源和目的重叠的内存复制",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c297",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "面试",
-    "question": "学习「memset」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的单元测试覆盖角度判断（样例组 6）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c298",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "基础",
-    "question": "学习「snprintf」时，哪项结论更适合记住？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的代码评审角度判断（样例组 7）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c299",
     "chapter": "数组与字符串",
     "topic": "数组越界",
     "difficulty": "进阶",
-    "question": "排查嵌入式 C 问题时，关于「数组越界」哪项处理更安全？",
+    "question": "这段代码的主要问题是什么？\n请重点从「数组越界」的内存破坏定位角度判断（样例组 8）。\nint a[4] = {0};\na[4] = 1;",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "数组合法下标必须落在 0 到 元素个数减 1 之间"
+      "a[4] 是数组最后一个元素",
+      "写 1 个 int 越界会被 C 语言自动忽略",
+      "数组初始化为 0 后可以多访问一个哨兵元素",
+      "访问 a[4] 越过数组末尾，有破坏相邻内存的风险"
     ],
     "answer": 3,
-    "explanation": "越界读写是未定义行为，常破坏相邻局部变量、返回地址或全局数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组下标从 0 到 n-1。初始化不会额外创建哨兵元素。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "越界",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0031",
+    "type": "bug_fix",
+    "code": "int a[4] = {0};\na[4] = 1;",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c300",
     "chapter": "数组与字符串",
     "topic": "数组大小计算",
     "difficulty": "易错",
-    "question": "排查嵌入式 C 问题时，关于「数组大小计算」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组大小计算」的寄存器副作用角度判断（样例组 9）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "在数组对象所在作用域可用 sizeof(array) / sizeof(array[0]) 计算元素个数",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "任何地方 sizeof(arr) 都能得到元素个数"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "数组传入函数后通常退化为指针，不能再用同样写法得到调用者数组长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "sizeof",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0032",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c301",
     "chapter": "数组与字符串",
     "topic": "数组作为函数参数",
     "difficulty": "面试",
-    "question": "排查嵌入式 C 问题时，关于「数组作为函数参数」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组作为函数参数」的编译优化影响角度判断（样例组 10）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "数组长度应作为独立参数传入函数，函数不要假设能从形参数组得到容量",
-      "形参 int a[] 会完整复制数组",
-      "函数内 sizeof(a) 是原数组总字节数"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "形参 int a[] 本质上调整为 int *a，容量信息已经丢失。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数组传参",
       "函数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0033",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c302",
     "chapter": "数组与字符串",
     "topic": "二维数组传参",
     "difficulty": "基础",
-    "question": "排查嵌入式 C 问题时，关于「二维数组传参」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「二维数组传参」的资源受限 MCU角度判断（样例组 11）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "二维数组可以传给任意 int **",
-      "列数不重要，运行时会自动识别",
-      "二维数组传参时通常要明确列数，例如 int a[][4] 或 int (*a)[4]",
-      "int ** 与 int [][4] 完全等价"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "列数参与地址计算，缺少列数时编译器无法知道下一行偏移。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“行指针、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "二维数组",
       "数组指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "行指针",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0034",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c303",
     "chapter": "数组与字符串",
     "topic": "柔性数组成员",
     "difficulty": "进阶",
-    "question": "排查嵌入式 C 问题时，关于「柔性数组成员」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「柔性数组成员」的面试追问角度判断（样例组 12）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "sizeof 会包含运行时所有柔性数组元素",
-      "柔性数组成员不需要额外分配空间",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "柔性数组成员通常放在结构体最后，并配合动态分配额外空间使用"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "它适合协议帧和变长数据，但 sizeof 结构体不包含柔性数组实际数据区。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "柔性数组",
       "结构体",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "interview",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0035",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c304",
     "chapter": "数组与字符串",
     "topic": "字符串结束符",
     "difficulty": "易错",
-    "question": "排查嵌入式 C 问题时，关于「字符串结束符」哪项处理更安全？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符」问题？\n请重点从「字符串结束符」的调试复盘角度判断（样例组 13）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "C 字符串必须以 \\0 结束，容量要同时容纳有效字符和结束符",
-      "字符 0 和空字符在语义上完全一样",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 0,
-    "explanation": "缺少 \\0 会让字符串函数继续向后读，可能越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
       "\\0",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0036",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c305",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "面试",
-    "question": "排查嵌入式 C 问题时，关于「strlen」哪项处理更安全？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的量产固件稳定性角度判断（样例组 14）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "strlen 统计 \\0 前字符数，不统计结尾 \\0，也不知道数组容量",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
     "answer": 1,
-    "explanation": "strlen 只能用于已经正确结束的字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c306",
     "chapter": "数组与字符串",
     "topic": "strcpy",
     "difficulty": "基础",
-    "question": "排查嵌入式 C 问题时，关于「strcpy」哪项处理更安全？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy」的初始化顺序角度判断（样例组 15）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "使用 strcpy 前必须确保目标缓冲区足够容纳源字符串和结尾 \\0",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 2,
-    "explanation": "strcpy 不知道目标容量，空间不足会写越界。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0038",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c307",
     "chapter": "数组与字符串",
     "topic": "strncpy",
     "difficulty": "进阶",
-    "question": "排查嵌入式 C 问题时，关于「strncpy」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strncpy」的边界条件角度判断（样例组 16）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "strncpy 不一定自动补结尾 \\0，使用后要检查或手动保证结束符"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "很多人误以为 strncpy 一定安全，但截断时目标可能不是合法 C 字符串。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strncpy",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0039",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c308",
     "chapter": "数组与字符串",
     "topic": "strcat",
     "difficulty": "易错",
-    "question": "排查嵌入式 C 问题时，关于「strcat」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcat」的失败路径角度判断（样例组 17）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "strcat 追加前目标字符串必须已有 \\0，且剩余空间足够",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "追加操作需要扫描目标结尾，并继续写入源字符串和结束符。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcat",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0040",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c309",
     "chapter": "数组与字符串",
     "topic": "strcmp",
     "difficulty": "面试",
-    "question": "排查嵌入式 C 问题时，关于「strcmp」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「strcmp」的生命周期角度判断（样例组 18）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "strcmp 返回值只表达小于、等于或大于，不应依赖具体差值",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "strcmp 相等时返回 1"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "不同实现的差值大小不应作为业务逻辑的一部分。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcmp",
       "字符串",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0041",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c310",
     "chapter": "数组与字符串",
     "topic": "memcpy",
     "difficulty": "基础",
-    "question": "排查嵌入式 C 问题时，关于「memcpy」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memcpy」的可移植性角度判断（样例组 19）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "memcpy 会自动处理重叠区域",
-      "memcpy 适合不重叠内存区域，源和目的重叠时应使用 memmove",
-      "memcpy 只能复制字符串"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 2,
-    "explanation": "重叠复制用 memcpy 结果未定义，是常见底层 bug。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memcpy",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0042",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c311",
     "chapter": "数组与字符串",
     "topic": "memmove",
     "difficulty": "进阶",
-    "question": "排查嵌入式 C 问题时，关于「memmove」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memmove」的中断安全角度判断（样例组 20）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memmove 比 memcpy 少一个长度参数",
-      "memmove 遇到 \\0 会停止",
-      "memmove 只能移动指针不复制数据",
-      "memmove 可以处理源和目的重叠的内存复制"
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小"
     ],
     "answer": 3,
-    "explanation": "它会选择合适方向或策略避免覆盖尚未复制的数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memmove",
       "内存",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0043",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c312",
     "chapter": "数组与字符串",
     "topic": "memset",
     "difficulty": "易错",
-    "question": "排查嵌入式 C 问题时，关于「memset」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「memset」的长期运行稳定性角度判断（样例组 21）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "memset 按字节填充值，不能用来把 int 数组可靠设置成任意整数值",
-      "memset 能调用构造函数",
-      "memset 会自动检查数组长度",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "16，因为形参写了 buf[16]",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 0,
-    "explanation": "memset(a, 1, sizeof a) 会把每个字节设为 1，不等于每个 int 都是 1。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "memset",
       "字节",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "填空选择",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0044",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c313",
     "chapter": "数组与字符串",
     "topic": "snprintf",
     "difficulty": "面试",
-    "question": "排查嵌入式 C 问题时，关于「snprintf」哪项处理更安全？",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「snprintf」的接口契约角度判断（样例组 22）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "snprintf 不能用于嵌入式项目",
-      "snprintf 比 sprintf 更适合固定缓冲区，因为可以传入容量并检查截断",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "嵌入式日志和协议拼接要优先控制写入长度。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 同时要把“sprintf、自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "snprintf",
       "缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "sprintf",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0045",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   }
 ]

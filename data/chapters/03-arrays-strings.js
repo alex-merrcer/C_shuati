@@ -4,76 +4,111 @@ module.exports = [
     "chapter": "数组与字符串",
     "topic": "数组名退化",
     "difficulty": "进阶",
-    "question": "下面函数中，arr 在函数体内本质上是什么？\nvoid f(int arr[]) {\n    /* ... */\n}",
+    "question": "在常见 32 位 MCU、指针大小为 4 字节的假设下，sizeof(buf) 更可能是多少？\n请重点从「数组名退化」的代码评审角度判断（样例组 9）。\nvoid clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
     "options": [
-      "完整数组对象，可以用 sizeof(arr) 得到原数组总字节数",
-      "int 指针，通常无法仅靠 arr 得到原数组元素个数",
-      "只能指向 1 个 int，不能访问 arr[1]",
-      "数组副本，修改 arr[0] 不影响调用者"
+      "16，因为形参写了 buf[16]",
+      "4，因为形参数组会调整为指针，sizeof(buf) 得到指针大小",
+      "1，因为 uint8_t 是 1 字节",
+      "无法编译，因为数组不能作为函数参数"
     ],
     "answer": 1,
-    "explanation": "数组作为函数参数时会调整为指针参数，void f(int arr[]) 与 void f(int *arr) 在形参层面等价。函数内 sizeof(arr) 得到的是指针大小，不是调用者数组总大小，因此长度通常要额外传入。",
+    "explanation": "函数形参中的数组声明会调整为指针，sizeof(buf) 不是调用者数组容量；正确接口应额外传入长度。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "数组",
       "退化",
-      "函数参数"
-    ]
+      "函数参数",
+      "代码相关题",
+      "错误诊断",
+      "嵌入式场景",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0046",
+    "type": "calculation",
+    "code": "void clear_buf(uint8_t buf[16]) {\n    memset(buf, 0, sizeof(buf));\n}\n\nuint8_t data[16];\nclear_buf(data);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c010",
     "chapter": "数组与字符串",
     "topic": "字符串结束符 \\0",
     "difficulty": "基础",
-    "question": "C 字符串为什么需要结尾的 \\0？",
+    "question": "下面代码缺少哪一步，最容易引发「字符串结束符 \\0」问题？\n请重点从「字符串结束符 \\0」的内存破坏定位角度判断（样例组 10）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "它用于标记字符串结束，许多字符串函数靠它停止读取",
-      "它用于表示字符 '0'，必须显示在屏幕上",
-      "它只在 C++ 中需要，C 语言不需要",
-      "它能自动防止数组越界"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen",
+      "把 read_bytes 的长度改成 sizeof(&rx)"
     ],
-    "answer": 0,
-    "explanation": "C 字符串是以空字符 \\0 结束的字符序列。strlen、printf 的 %s 等函数通常会一直读取到 \\0 为止。如果字符数组没有正确的 \\0，字符串函数可能继续读到数组之外。",
+    "answer": 2,
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "字符串",
-      "\\0"
-    ]
+      "\\0",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0047",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c011",
     "chapter": "数组与字符串",
     "topic": "strlen",
     "difficulty": "基础",
-    "question": "阅读定义：\nchar s[] = \"abc\";\n对 strlen(s) 的结果，哪项说法正确？",
+    "question": "下面代码缺少哪一步，最容易引发「strlen」问题？\n请重点从「strlen」的寄存器副作用角度判断（样例组 11）。\nchar rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
     "options": [
-      "结果是 3，因为 strlen 统计 \\0 之前的字符数",
-      "结果是 4，因为 strlen 会统计结尾 \\0",
-      "结果等于 sizeof(s)，在所有情况下都一样",
-      "结果不确定，因为字符串字面量不能放入数组"
+      "把 rx 改成 int 数组，strlen 就能自动知道长度",
+      "在 strlen 前调用 free(rx)，避免局部数组泄漏",
+      "把 read_bytes 的长度改成 sizeof(&rx)",
+      "确保 rx 中存在字符串结束符 \\0，或者不要把原始字节缓冲区直接交给 strlen"
     ],
-    "answer": 0,
-    "explanation": "s 数组中实际存放 'a'、'b'、'c'、'\\0' 共 4 个字符，但 strlen 只统计结尾 \\0 之前的字符个数，所以是 3。sizeof(s) 才会得到数组对象占用的总字节数。",
+    "answer": 3,
+    "explanation": "strlen 只能处理以 \\0 结束的 C 字符串，不能测量任意接收缓冲区。局部数组不能 free，sizeof(&rx) 也不是容量。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strlen",
-      "字符串"
-    ]
+      "字符串",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0037",
+    "type": "missing_step",
+    "code": "char rx[8];\nread_bytes(rx, 8);\nsize_t n = strlen(rx);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c012",
     "chapter": "数组与字符串",
     "topic": "strcpy 风险",
     "difficulty": "易错",
-    "question": "使用 strcpy(dst, src) 时最需要注意什么？",
+    "question": "下面代码的主要风险是什么？\n请重点从「strcpy 风险」的编译优化影响角度判断（样例组 12）。\nchar name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
     "options": [
-      "dst 必须有足够空间容纳 src 的内容和结尾 \\0",
-      "src 必须比 dst 更短 1 个字节以上，否则编译失败",
-      "strcpy 会自动扩容 dst",
-      "strcpy 会自动检查数组边界并抛出异常"
+      "目标数组容量不足，strcpy 不做边界检查，会写出 name 数组范围",
+      "字符串字面量在只读区，所以复制时不会越界",
+      "strcpy 会自动截断超出 name 容量的内容",
+      "name 是局部数组，所以容量会在运行时自动扩展"
     ],
     "answer": 0,
-    "explanation": "strcpy 会复制源字符串直到结尾 \\0，但它不知道目标数组容量。如果 dst 空间不足，就会写出边界，造成内存破坏。在嵌入式代码中应明确容量，必要时使用带长度限制的接口并检查截断。",
+    "explanation": "strcpy 只按源串的结尾 0 停止，不知道目标数组容量。正确选项指出固定数组和无边界复制组合的风险。 同时要把“sprintf”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "strcpy",
-      "数组越界"
-    ]
+      "数组越界",
+      "代码相关题",
+      "错误诊断",
+      "sprintf"
+    ],
+    "knowledgeId": "kp_0048",
+    "type": "bug_fix",
+    "code": "char name[8];\nconst char *src = \"stm32-driver\";\nstrcpy(name, src);",
+    "reviewStatus": "待复核"
   }
 ]

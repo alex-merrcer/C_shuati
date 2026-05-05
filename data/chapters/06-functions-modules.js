@@ -16,7 +16,11 @@ module.exports = [
     "tags": [
       "函数参数",
       "指针"
-    ]
+    ],
+    "knowledgeId": "kp_0079",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c018",
@@ -35,6 +39,10 @@ module.exports = [
     "tags": [
       "模块化",
       "头文件"
-    ]
+    ],
+    "knowledgeId": "kp_0080",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   }
 ]

@@ -26,7 +26,29 @@ const promptTemplates = [
   '遇到「{topic}」相关 bug 时，哪项排查方向最合理？',
   '为了让「{topic}」更可维护，哪项做法更推荐？',
   '学习「{topic}」时，哪项结论更适合记住？',
-  '排查嵌入式 C 问题时，关于「{topic}」哪项处理更安全？'
+  '排查嵌入式 C 问题时，关于「{topic}」哪项处理更安全？',
+  '下面哪个检查项最能提前发现「{topic}」相关缺陷？',
+  '把「{topic}」写进驱动代码前，哪项约束最应该先确认？',
+  '如果「{topic}」相关代码在不同 MCU 上表现不一致，优先怀疑哪一点？',
+  '做代码走查时，哪项描述最能说明「{topic}」的真实风险？',
+  '下面哪种写法最符合「{topic}」的边界意识？',
+  '针对「{topic}」设计单元测试时，最应该覆盖哪类情况？',
+  '如果要把「{topic}」用于长期运行固件，哪项更值得坚持？',
+  '看到「{topic}」出现在中断或驱动路径中，哪项判断最谨慎？',
+  '下面哪项不是靠编译通过就能证明「{topic}」安全的原因？',
+  '围绕「{topic}」做故障复盘时，哪项结论最可靠？',
+  '选择「{topic}」实现方案时，哪项取舍更适合嵌入式项目？',
+  '如果「{topic}」相关代码偶发失败，哪项排查最接近根因？',
+  '下面哪项更能体现「{topic}」的可移植写法？',
+  '维护别人写的「{topic}」代码时，第一步更应该做什么？',
+  '关于「{topic}」的边界条件，哪项说法最准确？',
+  '把「{topic}」用于协议或寄存器代码时，哪项最容易被忽略？',
+  '下列哪项能降低「{topic}」在量产固件中的风险？',
+  '审查「{topic}」相关宏或接口时，哪项最需要写进注释或约定？',
+  '如果「{topic}」牵涉数组、指针或生命周期，哪项检查最关键？',
+  '下面哪个反例最能说明「{topic}」不能只凭经验处理？',
+  '在资源受限的 MCU 中使用「{topic}」，哪项策略更稳？',
+  '针对「{topic}」写接口时，哪项输入约束应由调用者或被调用者明确？'
 ]
 
 const commonWrongOptions = [
@@ -36,6 +58,21 @@ const commonWrongOptions = [
   '遇到不确定行为时，直接用强制类型转换就能消除风险',
   '代码体积小就一定更安全，不需要关注边界条件',
   '嵌入式项目资源有限，所以可以忽略标准 C 的基本规则'
+]
+
+const explanationTails = [
+  '实际项目中应把这个点写成明确的接口约束，而不是靠调用者猜测。',
+  '如果这里写错，问题往往不是立即崩溃，而是表现为偶发数据破坏。',
+  '审查这类代码时，建议同时看边界、生命周期、类型和平台差异。',
+  '这类题不应该背输出结果，而应判断代码是否具备可移植和可维护的前提。',
+  '在 MCU 固件中，越靠近底层硬件和内存布局，越不能依赖隐含假设。',
+  '如果要写成公共模块，最好把容量、所有权和失败路径都放进接口说明。',
+  '这类错误通常能通过编译，却会在优化级别、芯片型号或数据边界变化时暴露。',
+  '更稳的做法是先保证 C 语义正确，再考虑性能和代码体积。',
+  '遇到类似场景时，优先用清晰的类型和显式检查替代侥幸运行。',
+  '做题时要把“能跑一次”和“标准保证、平台保证”分开看。',
+  '这也是嵌入式 C 容易挖坑的地方：局部写法会影响全局稳定性。',
+  '如果团队多人维护，越是底层细节越需要用命名、注释和测试固定下来。'
 ]
 
 function topic(name, correct, why, wrong, tags) {
@@ -406,12 +443,20 @@ function pickWrongOptions(spec, index) {
 }
 
 function buildQuestion(chapter, localIndex, globalId) {
-  const spec = chapter.topics[localIndex % chapter.topics.length]
-  const promptIndex = Math.floor(localIndex / chapter.topics.length) % promptTemplates.length
+  const topicIndex = localIndex % chapter.topics.length
+  const repeatIndex = Math.floor(localIndex / chapter.topics.length)
+  const spec = chapter.topics[topicIndex]
+  const promptIndex = (topicIndex * 13 + repeatIndex * 7 + chapter.topics.length) % promptTemplates.length
   const prompt = promptTemplates[promptIndex].replace('{topic}', spec.name)
   const wrongOptions = pickWrongOptions(spec, localIndex)
   const answer = globalId % 4
   const options = wrongOptions.slice()
+  const explanationTailIndex = (topicIndex * 5 + repeatIndex * 7 + chapter.topics.length) % explanationTails.length
+  let explanation = '围绕「' + spec.name + '」：' + spec.why + ' ' + explanationTails[explanationTailIndex]
+
+  if (explanation.length < 55) {
+    explanation += ' 审题时还要结合容量、边界条件和失败路径，不能只看一次运行结果。'
+  }
 
   options.splice(answer, 0, spec.correct)
 
@@ -423,7 +468,7 @@ function buildQuestion(chapter, localIndex, globalId) {
     question: prompt,
     options: options,
     answer: answer,
-    explanation: spec.why + ' 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。',
+    explanation: explanation,
     tags: spec.tags.concat(['扩展题库'])
   }
 }

@@ -16,7 +16,11 @@ module.exports = [
     "tags": [
       "main",
       "程序结构"
-    ]
+    ],
+    "knowledgeId": "kp_0010",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c002",
@@ -35,7 +39,11 @@ module.exports = [
     "tags": [
       "基本类型",
       "可移植性"
-    ]
+    ],
+    "knowledgeId": "kp_0011",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c003",
@@ -50,12 +58,16 @@ module.exports = [
       "signed int 一定比 unsigned int 占用更多内存"
     ],
     "answer": 2,
-    "explanation": "无符号整数运算在超出范围时按模 2 的位宽回绕，这是 C 标准定义的行为。带符号整数溢出是未定义行为，不能依赖它得到某个固定结果。",
+    "explanation": "无符号整数运算在超出范围时按模 2 的位宽回绕，这是 C 标准定义的行为。带符号整数溢出是未定义行为，不能依赖它得到某个固定结果。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "signed",
       "unsigned",
       "溢出"
-    ]
+    ],
+    "knowledgeId": "kp_0012",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c004",
@@ -74,7 +86,11 @@ module.exports = [
     "tags": [
       "sizeof",
       "基本类型"
-    ]
+    ],
+    "knowledgeId": "kp_0013",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c005",
@@ -93,6 +109,10 @@ module.exports = [
     "tags": [
       "优先级",
       "位运算"
-    ]
+    ],
+    "knowledgeId": "kp_0007",
+    "type": "concept",
+    "code": "",
+    "reviewStatus": "待复核"
   }
 ]

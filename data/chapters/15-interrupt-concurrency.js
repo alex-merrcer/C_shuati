@@ -4,699 +4,940 @@ module.exports = [
     "chapter": "中断、并发与实时性",
     "topic": "中断共享变量",
     "difficulty": "基础",
-    "question": "关于「中断共享变量」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「中断共享变量」的资源受限 MCU角度判断（样例组 65）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "主循环和 ISR 共享的变量要考虑 volatile、原子性和临界区",
-      "volatile 可以解决所有并发问题",
-      "ISR 修改变量主循环一定立即知道且无需 volatile",
-      "共享变量不需要初始化"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只保证访问可见，不保证复合操作不会被打断。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "volatile",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0142",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c745",
     "chapter": "中断、并发与实时性",
     "topic": "临界区保护",
     "difficulty": "进阶",
-    "question": "关于「临界区保护」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「临界区保护」的面试追问角度判断（样例组 66）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "所有代码都应永久关中断",
-      "对共享状态的复合读改写应使用合适的临界区保护",
-      "单字节变量复合操作一定原子",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "删除 volatile，让编译器把读取优化成一次",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 1,
-    "explanation": "关中断、锁或原子操作要按平台和实时性要求选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "临界区",
       "原子性",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "interview"
+    ],
+    "knowledgeId": "kp_0143",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c746",
     "chapter": "中断、并发与实时性",
     "topic": "中断中printf风险",
     "difficulty": "易错",
-    "question": "关于「中断中printf风险」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「中断中printf风险」的调试复盘角度判断（样例组 67）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "ISR 中可以随意等待串口发送完成",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "ISR 中 printf 可能阻塞、不可重入且耗时不可控，应尽量避免",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 2,
-    "explanation": "中断服务函数应短小，只做必要工作。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "printf",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0144",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c747",
     "chapter": "中断、并发与实时性",
     "topic": "中断中malloc限制",
     "difficulty": "面试",
-    "question": "关于「中断中malloc限制」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这段 ISR 代码的主要问题是什么？\n请重点从「中断中malloc限制」的量产固件稳定性角度判断（样例组 68）。\nvoid UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "ISR 中动态内存分配通常不可控，可能不可重入且耗时不确定"
+      "malloc 在中断中一定比静态缓冲更快",
+      "enqueue 后 buf 会被 C 语言自动释放",
+      "只要 buf 是 uint8_t *，uart_read 就不会失败",
+      "中断中动态分配内存不可控，还缺少 malloc 失败处理和所有权释放约定"
     ],
     "answer": 3,
-    "explanation": "实时系统应避免在中断中 malloc/free。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "ISR 中应避免不可预测耗时和复杂资源管理。正确选项同时指出实时性、失败路径和所有权。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "malloc",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0145",
+    "type": "bug_fix",
+    "code": "void UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c748",
     "chapter": "中断、并发与实时性",
     "topic": "环形缓冲区同步",
     "difficulty": "基础",
-    "question": "关于「环形缓冲区同步」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「环形缓冲区同步」的初始化顺序角度判断（样例组 69）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "单生产者单消费者环形缓冲区也要明确 head/tail 的访问原子性和可见性",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "缓冲区满/空判断、索引回绕和中断竞争都要设计清楚。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "环形缓冲区",
       "并发",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0146",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c749",
     "chapter": "中断、并发与实时性",
     "topic": "忙等待",
     "difficulty": "进阶",
-    "question": "关于「忙等待」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「忙等待」的边界条件角度判断（样例组 70）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "忙等待会占用 CPU，实时系统中要评估等待时间和优先级影响",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 1,
-    "explanation": "短等待可接受，长等待可能拖慢任务或影响功耗。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "忙等待",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0147",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c750",
     "chapter": "中断、并发与实时性",
     "topic": "最坏执行时间",
     "difficulty": "易错",
-    "question": "关于「最坏执行时间」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「最坏执行时间」的失败路径角度判断（样例组 71）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "实时任务要关注最坏执行时间，而不是只看平均耗时",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 2,
-    "explanation": "中断关闭时间、循环上界和库函数耗时都会影响实时性。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "WCET",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0148",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c751",
     "chapter": "中断、并发与实时性",
     "topic": "中断共享变量",
     "difficulty": "面试",
-    "question": "代码评审时看到「中断共享变量」相关实现，优先检查哪一点？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「中断共享变量」的生命周期角度判断（样例组 72）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "volatile 可以解决所有并发问题",
-      "主循环和 ISR 共享的变量要考虑 volatile、原子性和临界区"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读"
     ],
     "answer": 3,
-    "explanation": "volatile 只保证访问可见，不保证复合操作不会被打断。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "中断",
       "volatile",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0142",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c752",
     "chapter": "中断、并发与实时性",
     "topic": "临界区保护",
     "difficulty": "基础",
-    "question": "代码评审时看到「临界区保护」相关实现，优先检查哪一点？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「临界区保护」的可移植性角度判断（样例组 73）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "对共享状态的复合读改写应使用合适的临界区保护",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "临界区越长越实时",
-      "所有代码都应永久关中断"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "关中断、锁或原子操作要按平台和实时性要求选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "临界区",
       "原子性",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0143",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c753",
     "chapter": "中断、并发与实时性",
     "topic": "中断中printf风险",
     "difficulty": "进阶",
-    "question": "代码评审时看到「中断中printf风险」相关实现，优先检查哪一点？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「中断中printf风险」的中断安全角度判断（样例组 74）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "ISR 中 printf 最适合调试正式固件",
-      "ISR 中 printf 可能阻塞、不可重入且耗时不可控，应尽量避免",
-      "printf 一定是可重入且非阻塞",
-      "ISR 中可以随意等待串口发送完成"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 1,
-    "explanation": "中断服务函数应短小，只做必要工作。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "printf",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0144",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c754",
     "chapter": "中断、并发与实时性",
     "topic": "中断中malloc限制",
     "difficulty": "易错",
-    "question": "代码评审时看到「中断中malloc限制」相关实现，优先检查哪一点？",
+    "question": "这段 ISR 代码的主要问题是什么？\n请重点从「中断中malloc限制」的长期运行稳定性角度判断（样例组 75）。\nvoid UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
     "options": [
-      "malloc 一定是常数时间",
-      "free 在 ISR 中能自动整理碎片",
-      "ISR 中动态内存分配通常不可控，可能不可重入且耗时不确定",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "malloc 在中断中一定比静态缓冲更快",
+      "enqueue 后 buf 会被 C 语言自动释放",
+      "中断中动态分配内存不可控，还缺少 malloc 失败处理和所有权释放约定",
+      "只要 buf 是 uint8_t *，uart_read 就不会失败"
     ],
     "answer": 2,
-    "explanation": "实时系统应避免在中断中 malloc/free。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "ISR 中应避免不可预测耗时和复杂资源管理。正确选项同时指出实时性、失败路径和所有权。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "malloc",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0145",
+    "type": "bug_fix",
+    "code": "void UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c755",
     "chapter": "中断、并发与实时性",
     "topic": "环形缓冲区同步",
     "difficulty": "面试",
-    "question": "代码评审时看到「环形缓冲区同步」相关实现，优先检查哪一点？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「环形缓冲区同步」的接口契约角度判断（样例组 76）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "满和空可以用同一个条件且不额外设计",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "单生产者单消费者环形缓冲区也要明确 head/tail 的访问原子性和可见性"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读"
     ],
     "answer": 3,
-    "explanation": "缓冲区满/空判断、索引回绕和中断竞争都要设计清楚。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "环形缓冲区",
       "并发",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0146",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c756",
     "chapter": "中断、并发与实时性",
     "topic": "忙等待",
     "difficulty": "基础",
-    "question": "代码评审时看到「忙等待」相关实现，优先检查哪一点？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「忙等待」的单元测试覆盖角度判断（样例组 77）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "忙等待会占用 CPU，实时系统中要评估等待时间和优先级影响",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 0,
-    "explanation": "短等待可接受，长等待可能拖慢任务或影响功耗。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "忙等待",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0147",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c757",
     "chapter": "中断、并发与实时性",
     "topic": "最坏执行时间",
     "difficulty": "进阶",
-    "question": "代码评审时看到「最坏执行时间」相关实现，优先检查哪一点？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「最坏执行时间」的代码评审角度判断（样例组 78）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "实时任务要关注最坏执行时间，而不是只看平均耗时",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 1,
-    "explanation": "中断关闭时间、循环上界和库函数耗时都会影响实时性。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "WCET",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0148",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c758",
     "chapter": "中断、并发与实时性",
     "topic": "中断共享变量",
     "difficulty": "易错",
-    "question": "下列关于「中断共享变量」的理解，哪项最不容易埋坑？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「中断共享变量」的内存破坏定位角度判断（样例组 79）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "主循环和 ISR 共享的变量要考虑 volatile、原子性和临界区",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 只保证访问可见，不保证复合操作不会被打断。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "volatile",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0142",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c759",
     "chapter": "中断、并发与实时性",
     "topic": "临界区保护",
     "difficulty": "面试",
-    "question": "下列关于「临界区保护」的理解，哪项最不容易埋坑？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「临界区保护」的寄存器副作用角度判断（样例组 80）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "对共享状态的复合读改写应使用合适的临界区保护"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读"
     ],
     "answer": 3,
-    "explanation": "关中断、锁或原子操作要按平台和实时性要求选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "临界区",
       "原子性",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0143",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c760",
     "chapter": "中断、并发与实时性",
     "topic": "中断中printf风险",
     "difficulty": "基础",
-    "question": "下列关于「中断中printf风险」的理解，哪项最不容易埋坑？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「中断中printf风险」的编译优化影响角度判断（样例组 81）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "ISR 中 printf 可能阻塞、不可重入且耗时不可控，应尽量避免",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "ISR 中 printf 最适合调试正式固件"
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 0,
-    "explanation": "中断服务函数应短小，只做必要工作。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "printf",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0144",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c761",
     "chapter": "中断、并发与实时性",
     "topic": "中断中malloc限制",
     "difficulty": "进阶",
-    "question": "下列关于「中断中malloc限制」的理解，哪项最不容易埋坑？",
+    "question": "这段 ISR 代码的主要问题是什么？\n请重点从「中断中malloc限制」的资源受限 MCU角度判断（样例组 82）。\nvoid UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "ISR 中动态内存分配通常不可控，可能不可重入且耗时不确定",
-      "ISR 中 malloc 比静态缓冲更安全",
-      "malloc 一定是常数时间"
+      "malloc 在中断中一定比静态缓冲更快",
+      "中断中动态分配内存不可控，还缺少 malloc 失败处理和所有权释放约定",
+      "enqueue 后 buf 会被 C 语言自动释放",
+      "只要 buf 是 uint8_t *，uart_read 就不会失败"
     ],
     "answer": 1,
-    "explanation": "实时系统应避免在中断中 malloc/free。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "ISR 中应避免不可预测耗时和复杂资源管理。正确选项同时指出实时性、失败路径和所有权。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "malloc",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0145",
+    "type": "bug_fix",
+    "code": "void UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c762",
     "chapter": "中断、并发与实时性",
     "topic": "环形缓冲区同步",
     "difficulty": "易错",
-    "question": "下列关于「环形缓冲区同步」的理解，哪项最不容易埋坑？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「环形缓冲区同步」的面试追问角度判断（样例组 83）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "环形缓冲区不可能产生竞争",
-      "head 和 tail 可以任意宽度且无需保护",
-      "单生产者单消费者环形缓冲区也要明确 head/tail 的访问原子性和可见性",
-      "满和空可以用同一个条件且不额外设计"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "缓冲区满/空判断、索引回绕和中断竞争都要设计清楚。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "环形缓冲区",
       "并发",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏",
+      "interview"
+    ],
+    "knowledgeId": "kp_0146",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c763",
     "chapter": "中断、并发与实时性",
     "topic": "忙等待",
     "difficulty": "面试",
-    "question": "下列关于「忙等待」的理解，哪项最不容易埋坑？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「忙等待」的调试复盘角度判断（样例组 84）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "忙等待不影响实时性",
-      "所有外设等待都应无限 while",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "忙等待会占用 CPU，实时系统中要评估等待时间和优先级影响"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作"
     ],
     "answer": 3,
-    "explanation": "短等待可接受，长等待可能拖慢任务或影响功耗。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "忙等待",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0147",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c764",
     "chapter": "中断、并发与实时性",
     "topic": "最坏执行时间",
     "difficulty": "基础",
-    "question": "下列关于「最坏执行时间」的理解，哪项最不容易埋坑？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「最坏执行时间」的量产固件稳定性角度判断（样例组 85）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "实时任务要关注最坏执行时间，而不是只看平均耗时",
-      "printf 耗时可忽略不计",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 0,
-    "explanation": "中断关闭时间、循环上界和库函数耗时都会影响实时性。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "WCET",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0148",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c765",
     "chapter": "中断、并发与实时性",
     "topic": "中断共享变量",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「中断共享变量」，哪项判断更可靠？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「中断共享变量」的初始化顺序角度判断（样例组 86）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "主循环和 ISR 共享的变量要考虑 volatile、原子性和临界区",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "删除 volatile，让编译器把读取优化成一次",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 1,
-    "explanation": "volatile 只保证访问可见，不保证复合操作不会被打断。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "volatile",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0142",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c766",
     "chapter": "中断、并发与实时性",
     "topic": "临界区保护",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「临界区保护」，哪项判断更可靠？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「临界区保护」的边界条件角度判断（样例组 87）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "对共享状态的复合读改写应使用合适的临界区保护",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "关中断、锁或原子操作要按平台和实时性要求选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "临界区",
       "原子性",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0143",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c767",
     "chapter": "中断、并发与实时性",
     "topic": "中断中printf风险",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「中断中printf风险」，哪项判断更可靠？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「中断中printf风险」的失败路径角度判断（样例组 88）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "ISR 中 printf 可能阻塞、不可重入且耗时不可控，应尽量避免"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作"
     ],
     "answer": 3,
-    "explanation": "中断服务函数应短小，只做必要工作。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "printf",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0144",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c768",
     "chapter": "中断、并发与实时性",
     "topic": "中断中malloc限制",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「中断中malloc限制」，哪项判断更可靠？",
+    "question": "这段 ISR 代码的主要问题是什么？\n请重点从「中断中malloc限制」的生命周期角度判断（样例组 89）。\nvoid UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
     "options": [
-      "ISR 中动态内存分配通常不可控，可能不可重入且耗时不确定",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "中断中动态分配内存不可控，还缺少 malloc 失败处理和所有权释放约定",
+      "malloc 在中断中一定比静态缓冲更快",
+      "enqueue 后 buf 会被 C 语言自动释放",
+      "只要 buf 是 uint8_t *，uart_read 就不会失败"
     ],
     "answer": 0,
-    "explanation": "实时系统应避免在中断中 malloc/free。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "ISR 中应避免不可预测耗时和复杂资源管理。正确选项同时指出实时性、失败路径和所有权。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "中断",
       "malloc",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0145",
+    "type": "bug_fix",
+    "code": "void UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c769",
     "chapter": "中断、并发与实时性",
     "topic": "环形缓冲区同步",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「环形缓冲区同步」，哪项判断更可靠？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「环形缓冲区同步」的可移植性角度判断（样例组 90）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "单生产者单消费者环形缓冲区也要明确 head/tail 的访问原子性和可见性",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "环形缓冲区不可能产生竞争"
+      "删除 volatile，让编译器把读取优化成一次",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 1,
-    "explanation": "缓冲区满/空判断、索引回绕和中断竞争都要设计清楚。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "环形缓冲区",
       "并发",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0146",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c770",
     "chapter": "中断、并发与实时性",
     "topic": "忙等待",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「忙等待」，哪项判断更可靠？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「忙等待」的中断安全角度判断（样例组 91）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "忙等待一定比中断更省电",
-      "忙等待会占用 CPU，实时系统中要评估等待时间和优先级影响",
-      "忙等待不影响实时性"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 2,
-    "explanation": "短等待可接受，长等待可能拖慢任务或影响功耗。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "忙等待",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0147",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c771",
     "chapter": "中断、并发与实时性",
     "topic": "最坏执行时间",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「最坏执行时间」，哪项判断更可靠？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「最坏执行时间」的长期运行稳定性角度判断（样例组 92）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "平均时间短就一定满足实时性",
-      "递归函数没有最坏深度问题",
-      "printf 耗时可忽略不计",
-      "实时任务要关注最坏执行时间，而不是只看平均耗时"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作"
     ],
     "answer": 3,
-    "explanation": "中断关闭时间、循环上界和库函数耗时都会影响实时性。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "WCET",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0148",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c772",
     "chapter": "中断、并发与实时性",
     "topic": "中断共享变量",
     "difficulty": "基础",
-    "question": "遇到「中断共享变量」相关 bug 时，哪项排查方向最合理？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「中断共享变量」的接口契约角度判断（样例组 93）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "主循环和 ISR 共享的变量要考虑 volatile、原子性和临界区",
-      "ISR 修改变量主循环一定立即知道且无需 volatile",
-      "共享变量不需要初始化",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 只保证访问可见，不保证复合操作不会被打断。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "volatile",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0142",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c773",
     "chapter": "中断、并发与实时性",
     "topic": "临界区保护",
     "difficulty": "进阶",
-    "question": "遇到「临界区保护」相关 bug 时，哪项排查方向最合理？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「临界区保护」的单元测试覆盖角度判断（样例组 94）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "单字节变量复合操作一定原子",
-      "对共享状态的复合读改写应使用合适的临界区保护",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "删除 volatile，让编译器把读取优化成一次",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 1,
-    "explanation": "关中断、锁或原子操作要按平台和实时性要求选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "临界区",
       "原子性",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0143",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c774",
     "chapter": "中断、并发与实时性",
     "topic": "中断中printf风险",
     "difficulty": "易错",
-    "question": "遇到「中断中printf风险」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「中断中printf风险」的代码评审角度判断（样例组 95）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "ISR 中 printf 可能阻塞、不可重入且耗时不可控，应尽量避免",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 2,
-    "explanation": "中断服务函数应短小，只做必要工作。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "printf",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0144",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c775",
     "chapter": "中断、并发与实时性",
     "topic": "中断中malloc限制",
     "difficulty": "面试",
-    "question": "遇到「中断中malloc限制」相关 bug 时，哪项排查方向最合理？",
+    "question": "这段 ISR 代码的主要问题是什么？\n请重点从「中断中malloc限制」的内存破坏定位角度判断（样例组 96）。\nvoid UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "ISR 中动态内存分配通常不可控，可能不可重入且耗时不确定"
+      "malloc 在中断中一定比静态缓冲更快",
+      "enqueue 后 buf 会被 C 语言自动释放",
+      "只要 buf 是 uint8_t *，uart_read 就不会失败",
+      "中断中动态分配内存不可控，还缺少 malloc 失败处理和所有权释放约定"
     ],
     "answer": 3,
-    "explanation": "实时系统应避免在中断中 malloc/free。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "ISR 中应避免不可预测耗时和复杂资源管理。正确选项同时指出实时性、失败路径和所有权。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "中断",
       "malloc",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0145",
+    "type": "bug_fix",
+    "code": "void UART_IRQHandler(void) {\n    uint8_t *buf = malloc(64);\n    uart_read(buf, 64);\n    enqueue(buf);\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c776",
     "chapter": "中断、并发与实时性",
     "topic": "环形缓冲区同步",
     "difficulty": "基础",
-    "question": "遇到「环形缓冲区同步」相关 bug 时，哪项排查方向最合理？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「环形缓冲区同步」的寄存器副作用角度判断（样例组 0）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "单生产者单消费者环形缓冲区也要明确 head/tail 的访问原子性和可见性",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "缓冲区满/空判断、索引回绕和中断竞争都要设计清楚。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "环形缓冲区",
       "并发",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0146",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c777",
     "chapter": "中断、并发与实时性",
     "topic": "忙等待",
     "difficulty": "进阶",
-    "question": "遇到「忙等待」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「忙等待」的编译优化影响角度判断（样例组 1）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "忙等待会占用 CPU，实时系统中要评估等待时间和优先级影响",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 1,
-    "explanation": "短等待可接受，长等待可能拖慢任务或影响功耗。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "忙等待",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0147",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c778",
     "chapter": "中断、并发与实时性",
     "topic": "最坏执行时间",
     "difficulty": "易错",
-    "question": "遇到「最坏执行时间」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段中断代码，哪项诊断最准确？\n请重点从「最坏执行时间」的资源受限 MCU角度判断（样例组 2）。\nvolatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "实时任务要关注最坏执行时间，而不是只看平均耗时",
-      "平均时间短就一定满足实时性"
+      "ticks 有 volatile 修饰，所以 ticks++ 在所有平台都原子",
+      "printf 只打印一行，放在中断里一定不会阻塞",
+      "ISR 中调用 printf 风险高，ticks++ 也不等于通用原子操作",
+      "ISR 中函数调用越多，实时性通常越好"
     ],
     "answer": 2,
-    "explanation": "中断关闭时间、循环上界和库函数耗时都会影响实时性。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "中断代码要短、确定、少阻塞。volatile 只处理可见性，不负责互斥、原子性和最坏执行时间。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "实时性",
       "WCET",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0148",
+    "type": "bug_fix",
+    "code": "volatile uint32_t ticks;\n\nvoid SysTick_Handler(void) {\n    ticks++;\n    printf(\"tick\\n\");\n}",
+    "reviewStatus": "待复核"
   }
 ]

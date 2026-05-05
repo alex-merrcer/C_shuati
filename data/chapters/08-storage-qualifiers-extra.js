@@ -4,904 +4,1274 @@ module.exports = [
     "chapter": "const、volatile、static、extern",
     "topic": "const对象",
     "difficulty": "基础",
-    "question": "关于「const对象」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const对象」的量产固件稳定性角度判断（样例组 24）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 变量一定存放在 Flash",
-      "const 表达只读意图，但不等同于所有场景都放入只读物理存储",
-      "const 可以防止任何方式修改底层内存",
-      "const 和宏完全等价"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "是否进入 Flash 或 rodata 取决于对象属性、链接脚本和平台实现。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "只读",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0088",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c510",
     "chapter": "const、volatile、static、extern",
     "topic": "const参数",
     "difficulty": "进阶",
-    "question": "关于「const参数」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const参数」的初始化顺序角度判断（样例组 25）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 指针参数不能传数组",
-      "const 会让函数自动更快",
-      "指针参数若只读不写，使用指向 const 的指针能表达接口约束",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 2,
-    "explanation": "例如 const uint8_t *buf 能告诉调用者函数不会通过该指针修改数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "函数参数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0089",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c511",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile变量",
     "difficulty": "易错",
-    "question": "关于「volatile变量」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile变量」的边界条件角度判断（样例组 26）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "volatile 变量一定不会被中断打断",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "volatile 用于提示对象可能被当前执行流之外改变，不能随意缓存或优化访问"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问"
     ],
     "answer": 3,
-    "explanation": "中断标志和硬件寄存器常见，但 volatile 不等于线程安全。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "优化",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0090",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c512",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile中断共享变量",
     "difficulty": "面试",
-    "question": "关于「volatile中断共享变量」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「volatile中断共享变量」的失败路径角度判断（样例组 27）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "ISR 和主循环共享的标志位通常需要 volatile，并配合临界区处理复合访问",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 解决可见性，临界区解决竞争窗口。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "中断",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0091",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c513",
     "chapter": "const、volatile、static、extern",
     "topic": "static局部变量",
     "difficulty": "基础",
-    "question": "关于「static局部变量」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static局部变量」的生命周期角度判断（样例组 28）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "static 局部变量只初始化一次，生命周期到程序结束，但作用域仍在函数内",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 1,
-    "explanation": "它适合保存状态，也会让函数不再无状态。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "生命周期",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码阅读"
+    ],
+    "knowledgeId": "kp_0092",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c514",
     "chapter": "const、volatile、static、extern",
     "topic": "static全局变量",
     "difficulty": "进阶",
-    "question": "关于「static全局变量」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static全局变量」的可移植性角度判断（样例组 29）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "文件作用域 static 变量具有内部链接，只在当前编译单元可见",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 2,
-    "explanation": "这能隐藏模块内部状态，减少命名冲突。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "内部链接",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0093",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c515",
     "chapter": "const、volatile、static、extern",
     "topic": "extern变量声明",
     "difficulty": "易错",
-    "question": "关于「extern变量声明」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern变量声明」的中断安全角度判断（样例组 30）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "extern 声明不分配存储，真正定义应放在一个源文件中"
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0",
+      "int g_mode = 0;"
     ],
     "answer": 3,
-    "explanation": "头文件中放 extern 声明，源文件中放唯一定义，是常见组织方式。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "声明定义",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0094",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c516",
     "chapter": "const、volatile、static、extern",
     "topic": "extern与头文件",
     "difficulty": "面试",
-    "question": "关于「extern与头文件」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern与头文件」的长期运行稳定性角度判断（样例组 31）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "头文件中的 extern 声明应与唯一源文件定义保持类型一致",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "头文件和源文件声明不同也没关系"
+      "int g_mode = 0;",
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 0,
-    "explanation": "类型不一致会造成链接或运行期解释错误。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "头文件",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0095",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c517",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile const寄存器",
     "difficulty": "基础",
-    "question": "关于「volatile const寄存器」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile const寄存器」的接口契约角度判断（样例组 32）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "只读硬件寄存器常声明为 volatile const，表示值会变化但软件不应写",
-      "volatile const 表示变量永远不变",
-      "volatile const 可以随意写入"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "const 约束写访问，volatile 保证每次读取真实发生。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "const",
       "寄存器",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0096",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c518",
     "chapter": "const、volatile、static、extern",
     "topic": "const对象",
     "difficulty": "进阶",
-    "question": "代码评审时看到「const对象」相关实现，优先检查哪一点？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const对象」的单元测试覆盖角度判断（样例组 33）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 变量一定存放在 Flash",
-      "const 可以防止任何方式修改底层内存",
-      "const 表达只读意图，但不等同于所有场景都放入只读物理存储",
-      "const 和宏完全等价"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 2,
-    "explanation": "是否进入 Flash 或 rodata 取决于对象属性、链接脚本和平台实现。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "只读",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0088",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c519",
     "chapter": "const、volatile、static、extern",
     "topic": "const参数",
     "difficulty": "易错",
-    "question": "代码评审时看到「const参数」相关实现，优先检查哪一点？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const参数」的代码评审角度判断（样例组 34）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 指针参数不能传数组",
-      "const 会让函数自动更快",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "指针参数若只读不写，使用指向 const 的指针能表达接口约束"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问"
     ],
     "answer": 3,
-    "explanation": "例如 const uint8_t *buf 能告诉调用者函数不会通过该指针修改数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "函数参数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0089",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c520",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile变量",
     "difficulty": "面试",
-    "question": "代码评审时看到「volatile变量」相关实现，优先检查哪一点？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile变量」的内存破坏定位角度判断（样例组 35）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "volatile 用于提示对象可能被当前执行流之外改变，不能随意缓存或优化访问",
-      "volatile 变量一定不会被中断打断",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 0,
-    "explanation": "中断标志和硬件寄存器常见，但 volatile 不等于线程安全。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "volatile",
       "优化",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0090",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c521",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile中断共享变量",
     "difficulty": "基础",
-    "question": "代码评审时看到「volatile中断共享变量」相关实现，优先检查哪一点？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「volatile中断共享变量」的寄存器副作用角度判断（样例组 36）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "ISR 和主循环共享的标志位通常需要 volatile，并配合临界区处理复合访问",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "删除 volatile，让编译器把读取优化成一次",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 1,
-    "explanation": "volatile 解决可见性，临界区解决竞争窗口。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "中断",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0091",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c522",
     "chapter": "const、volatile、static、extern",
     "topic": "static局部变量",
     "difficulty": "进阶",
-    "question": "代码评审时看到「static局部变量」相关实现，优先检查哪一点？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static局部变量」的编译优化影响角度判断（样例组 37）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "static 局部变量只初始化一次，生命周期到程序结束，但作用域仍在函数内",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 2,
-    "explanation": "它适合保存状态，也会让函数不再无状态。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "生命周期",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码阅读"
+    ],
+    "knowledgeId": "kp_0092",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c523",
     "chapter": "const、volatile、static、extern",
     "topic": "static全局变量",
     "difficulty": "易错",
-    "question": "代码评审时看到「static全局变量」相关实现，优先检查哪一点？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static全局变量」的资源受限 MCU角度判断（样例组 38）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "文件作用域 static 变量具有内部链接，只在当前编译单元可见"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值"
     ],
     "answer": 3,
-    "explanation": "这能隐藏模块内部状态，减少命名冲突。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "内部链接",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0093",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c524",
     "chapter": "const、volatile、static、extern",
     "topic": "extern变量声明",
     "difficulty": "面试",
-    "question": "代码评审时看到「extern变量声明」相关实现，优先检查哪一点？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern变量声明」的面试追问角度判断（样例组 39）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "extern 声明不分配存储，真正定义应放在一个源文件中",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "int g_mode = 0;",
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 0,
-    "explanation": "头文件中放 extern 声明，源文件中放唯一定义，是常见组织方式。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "声明定义",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "interview"
+    ],
+    "knowledgeId": "kp_0094",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c525",
     "chapter": "const、volatile、static、extern",
     "topic": "extern与头文件",
     "difficulty": "基础",
-    "question": "代码评审时看到「extern与头文件」相关实现，优先检查哪一点？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern与头文件」的调试复盘角度判断（样例组 40）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "头文件中的 extern 声明应与唯一源文件定义保持类型一致",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "头文件和源文件声明不同也没关系"
+      "extern int g_mode;",
+      "int g_mode = 0;",
+      "static int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 1,
-    "explanation": "类型不一致会造成链接或运行期解释错误。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "头文件",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0095",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c526",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile const寄存器",
     "difficulty": "进阶",
-    "question": "代码评审时看到「volatile const寄存器」相关实现，优先检查哪一点？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile const寄存器」的量产固件稳定性角度判断（样例组 41）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "volatile const 表示变量永远不变",
-      "只读硬件寄存器常声明为 volatile const，表示值会变化但软件不应写",
-      "volatile const 可以随意写入"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 2,
-    "explanation": "const 约束写访问，volatile 保证每次读取真实发生。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "const",
       "寄存器",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0096",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c527",
     "chapter": "const、volatile、static、extern",
     "topic": "const对象",
     "difficulty": "易错",
-    "question": "下列关于「const对象」的理解，哪项最不容易埋坑？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const对象」的初始化顺序角度判断（样例组 42）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 变量一定存放在 Flash",
-      "const 可以防止任何方式修改底层内存",
-      "const 和宏完全等价",
-      "const 表达只读意图，但不等同于所有场景都放入只读物理存储"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问"
     ],
     "answer": 3,
-    "explanation": "是否进入 Flash 或 rodata 取决于对象属性、链接脚本和平台实现。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "只读",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0088",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c528",
     "chapter": "const、volatile、static、extern",
     "topic": "const参数",
     "difficulty": "面试",
-    "question": "下列关于「const参数」的理解，哪项最不容易埋坑？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const参数」的边界条件角度判断（样例组 43）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "指针参数若只读不写，使用指向 const 的指针能表达接口约束",
-      "const 指针参数不能传数组",
-      "const 会让函数自动更快",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 0,
-    "explanation": "例如 const uint8_t *buf 能告诉调用者函数不会通过该指针修改数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "函数参数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0089",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c529",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile变量",
     "difficulty": "基础",
-    "question": "下列关于「volatile变量」的理解，哪项最不容易埋坑？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile变量」的失败路径角度判断（样例组 44）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "volatile 变量一定不会被中断打断",
-      "volatile 用于提示对象可能被当前执行流之外改变，不能随意缓存或优化访问",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "中断标志和硬件寄存器常见，但 volatile 不等于线程安全。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "优化",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0090",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c530",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile中断共享变量",
     "difficulty": "进阶",
-    "question": "下列关于「volatile中断共享变量」的理解，哪项最不容易埋坑？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「volatile中断共享变量」的生命周期角度判断（样例组 45）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "ISR 和主循环共享的标志位通常需要 volatile，并配合临界区处理复合访问",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 2,
-    "explanation": "volatile 解决可见性，临界区解决竞争窗口。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "volatile",
       "中断",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0091",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c531",
     "chapter": "const、volatile、static、extern",
     "topic": "static局部变量",
     "difficulty": "易错",
-    "question": "下列关于「static局部变量」的理解，哪项最不容易埋坑？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static局部变量」的可移植性角度判断（样例组 46）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "static 局部变量只初始化一次，生命周期到程序结束，但作用域仍在函数内"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值"
     ],
     "answer": 3,
-    "explanation": "它适合保存状态，也会让函数不再无状态。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "生命周期",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "补漏",
+      "代码阅读"
+    ],
+    "knowledgeId": "kp_0092",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c532",
     "chapter": "const、volatile、static、extern",
     "topic": "static全局变量",
     "difficulty": "面试",
-    "question": "下列关于「static全局变量」的理解，哪项最不容易埋坑？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static全局变量」的中断安全角度判断（样例组 47）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "文件作用域 static 变量具有内部链接，只在当前编译单元可见",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 0,
-    "explanation": "这能隐藏模块内部状态，减少命名冲突。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "内部链接",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0093",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c533",
     "chapter": "const、volatile、static、extern",
     "topic": "extern变量声明",
     "difficulty": "基础",
-    "question": "下列关于「extern变量声明」的理解，哪项最不容易埋坑？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern变量声明」的长期运行稳定性角度判断（样例组 48）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "extern 声明不分配存储，真正定义应放在一个源文件中",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "extern int g_mode;",
+      "int g_mode = 0;",
+      "static int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 1,
-    "explanation": "头文件中放 extern 声明，源文件中放唯一定义，是常见组织方式。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "声明定义",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0094",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c534",
     "chapter": "const、volatile、static、extern",
     "topic": "extern与头文件",
     "difficulty": "进阶",
-    "question": "下列关于「extern与头文件」的理解，哪项最不容易埋坑？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern与头文件」的接口契约角度判断（样例组 49）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "头文件中的 extern 声明应与唯一源文件定义保持类型一致",
-      "头文件和源文件声明不同也没关系"
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 2,
-    "explanation": "类型不一致会造成链接或运行期解释错误。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "头文件",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0095",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c535",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile const寄存器",
     "difficulty": "易错",
-    "question": "下列关于「volatile const寄存器」的理解，哪项最不容易埋坑？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile const寄存器」的单元测试覆盖角度判断（样例组 50）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "volatile const 表示变量永远不变",
-      "volatile const 可以随意写入",
-      "只读硬件寄存器常声明为 volatile const，表示值会变化但软件不应写"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问"
     ],
     "answer": 3,
-    "explanation": "const 约束写访问，volatile 保证每次读取真实发生。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "const",
       "寄存器",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0096",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c536",
     "chapter": "const、volatile、static、extern",
     "topic": "const对象",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「const对象」，哪项判断更可靠？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const对象」的代码评审角度判断（样例组 51）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 表达只读意图，但不等同于所有场景都放入只读物理存储",
-      "const 变量一定存放在 Flash",
-      "const 可以防止任何方式修改底层内存",
-      "const 和宏完全等价"
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 0,
-    "explanation": "是否进入 Flash 或 rodata 取决于对象属性、链接脚本和平台实现。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "只读",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0088",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c537",
     "chapter": "const、volatile、static、extern",
     "topic": "const参数",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「const参数」，哪项判断更可靠？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const参数」的内存破坏定位角度判断（样例组 52）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 指针参数不能传数组",
-      "指针参数若只读不写，使用指向 const 的指针能表达接口约束",
-      "const 会让函数自动更快",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "例如 const uint8_t *buf 能告诉调用者函数不会通过该指针修改数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "函数参数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0089",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c538",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile变量",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「volatile变量」，哪项判断更可靠？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile变量」的寄存器副作用角度判断（样例组 53）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "volatile 变量一定不会被中断打断",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "volatile 用于提示对象可能被当前执行流之外改变，不能随意缓存或优化访问",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 2,
-    "explanation": "中断标志和硬件寄存器常见，但 volatile 不等于线程安全。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "优化",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0090",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c539",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile中断共享变量",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「volatile中断共享变量」，哪项判断更可靠？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「volatile中断共享变量」的编译优化影响角度判断（样例组 54）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "ISR 和主循环共享的标志位通常需要 volatile，并配合临界区处理复合访问"
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)",
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读"
     ],
     "answer": 3,
-    "explanation": "volatile 解决可见性，临界区解决竞争窗口。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "中断",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0091",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c540",
     "chapter": "const、volatile、static、extern",
     "topic": "static局部变量",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「static局部变量」，哪项判断更可靠？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static局部变量」的资源受限 MCU角度判断（样例组 55）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "static 局部变量只初始化一次，生命周期到程序结束，但作用域仍在函数内",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 0,
-    "explanation": "它适合保存状态，也会让函数不再无状态。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "生命周期",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码阅读"
+    ],
+    "knowledgeId": "kp_0092",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c541",
     "chapter": "const、volatile、static、extern",
     "topic": "static全局变量",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「static全局变量」，哪项判断更可靠？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static全局变量」的面试追问角度判断（样例组 56）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "文件作用域 static 变量具有内部链接，只在当前编译单元可见",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 1,
-    "explanation": "这能隐藏模块内部状态，减少命名冲突。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "内部链接",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "interview",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0093",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c542",
     "chapter": "const、volatile、static、extern",
     "topic": "extern变量声明",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「extern变量声明」，哪项判断更可靠？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern变量声明」的调试复盘角度判断（样例组 57）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "extern 声明不分配存储，真正定义应放在一个源文件中",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 2,
-    "explanation": "头文件中放 extern 声明，源文件中放唯一定义，是常见组织方式。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "声明定义",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0094",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c543",
     "chapter": "const、volatile、static、extern",
     "topic": "extern与头文件",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「extern与头文件」，哪项判断更可靠？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern与头文件」的量产固件稳定性角度判断（样例组 58）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "头文件和源文件声明不同也没关系",
-      "头文件中的 extern 声明应与唯一源文件定义保持类型一致"
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0",
+      "int g_mode = 0;"
     ],
     "answer": 3,
-    "explanation": "类型不一致会造成链接或运行期解释错误。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "头文件",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0095",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c544",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile const寄存器",
     "difficulty": "面试",
-    "question": "做裸机或 RTOS 项目时使用「volatile const寄存器」，哪项判断更可靠？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile const寄存器」的初始化顺序角度判断（样例组 59）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "只读硬件寄存器常声明为 volatile const，表示值会变化但软件不应写",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "volatile const 表示变量永远不变",
-      "volatile const 可以随意写入"
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 0,
-    "explanation": "const 约束写访问，volatile 保证每次读取真实发生。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "const",
       "寄存器",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0096",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c545",
     "chapter": "const、volatile、static、extern",
     "topic": "const对象",
     "difficulty": "基础",
-    "question": "遇到「const对象」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const对象」的边界条件角度判断（样例组 60）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 变量一定存放在 Flash",
-      "const 表达只读意图，但不等同于所有场景都放入只读物理存储",
-      "const 可以防止任何方式修改底层内存",
-      "const 和宏完全等价"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "是否进入 Flash 或 rodata 取决于对象属性、链接脚本和平台实现。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "只读",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0088",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c546",
     "chapter": "const、volatile、static、extern",
     "topic": "const参数",
     "difficulty": "进阶",
-    "question": "遇到「const参数」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「const参数」的失败路径角度判断（样例组 61）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "const 指针参数不能传数组",
-      "const 会让函数自动更快",
-      "指针参数若只读不写，使用指向 const 的指针能表达接口约束",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 2,
-    "explanation": "例如 const uint8_t *buf 能告诉调用者函数不会通过该指针修改数据。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "const",
       "函数参数",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0089",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c547",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile变量",
     "difficulty": "易错",
-    "question": "遇到「volatile变量」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile变量」的生命周期角度判断（样例组 62）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "volatile 变量一定不会被中断打断",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "volatile 用于提示对象可能被当前执行流之外改变，不能随意缓存或优化访问"
+      "const 表示寄存器值永远不会变化",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问"
     ],
     "answer": 3,
-    "explanation": "中断标志和硬件寄存器常见，但 volatile 不等于线程安全。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "volatile",
       "优化",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "错误诊断",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0090",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c548",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile中断共享变量",
     "difficulty": "面试",
-    "question": "遇到「volatile中断共享变量」相关 bug 时，哪项排查方向最合理？",
+    "question": "如果目标 MCU 读取 16 位变量不是原子操作，这段代码缺少哪一步？\n请重点从「volatile中断共享变量」的可移植性角度判断（样例组 63）。\nvolatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
     "options": [
-      "ISR 和主循环共享的标志位通常需要 volatile，并配合临界区处理复合访问",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "在读取共享变量时使用临界区或其他同步机制，避免中断更新造成撕裂读",
+      "删除 volatile，让编译器把读取优化成一次",
+      "把返回类型改成 uint8_t，自动避免并发问题",
+      "在函数末尾调用 free(&adc_value)"
     ],
     "answer": 0,
-    "explanation": "volatile 解决可见性，临界区解决竞争窗口。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "volatile 只能保证每次读取发生，不能阻止 ISR 在多字节读取中间修改变量；正确选项补的是同步。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "中断",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0091",
+    "type": "missing_step",
+    "code": "volatile uint16_t adc_value;\n\nuint16_t read_adc_snapshot(void) {\n    return adc_value;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c549",
     "chapter": "const、volatile、static、extern",
     "topic": "static局部变量",
     "difficulty": "基础",
-    "question": "遇到「static局部变量」相关 bug 时，哪项排查方向最合理？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static局部变量」的中断安全角度判断（样例组 64）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "static 局部变量只初始化一次，生命周期到程序结束，但作用域仍在函数内",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "两次都返回 0，因为 static 变量不能修改",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 1,
-    "explanation": "它适合保存状态，也会让函数不再无状态。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "生命周期",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "错误诊断",
+      "嵌入式场景",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "代码阅读"
+    ],
+    "knowledgeId": "kp_0092",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c550",
     "chapter": "const、volatile、static、extern",
     "topic": "static全局变量",
     "difficulty": "进阶",
-    "question": "遇到「static全局变量」相关 bug 时，哪项排查方向最合理？",
+    "question": "连续调用 next_id 两次，返回值更可能是什么？\n请重点从「static全局变量」的长期运行稳定性角度判断（样例组 65）。\nint next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "文件作用域 static 变量具有内部链接，只在当前编译单元可见",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "两次都返回 1，因为局部变量每次调用都会重新初始化",
+      "两次都返回 0，因为 static 变量不能修改",
+      "第一次返回 1，第二次返回 2，因为 static 局部变量只初始化一次并保持值",
+      "返回值不确定，因为 static 局部变量一定未初始化"
     ],
     "answer": 2,
-    "explanation": "这能隐藏模块内部状态，减少命名冲突。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "static 局部变量具有静态存储期，但作用域仍在函数内部；它会跨调用保留状态。 同时要把“自动存储期、静态存储期、局部变量分配”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "static",
       "内部链接",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配"
+    ],
+    "knowledgeId": "kp_0093",
+    "type": "code_read",
+    "code": "int next_id(void) {\n    static int id = 0;\n    return ++id;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c551",
     "chapter": "const、volatile、static、extern",
     "topic": "extern变量声明",
     "difficulty": "易错",
-    "question": "遇到「extern变量声明」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern变量声明」的接口契约角度判断（样例组 66）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "extern 声明不分配存储，真正定义应放在一个源文件中"
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0",
+      "int g_mode = 0;"
     ],
     "answer": 3,
-    "explanation": "头文件中放 extern 声明，源文件中放唯一定义，是常见组织方式。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "声明定义",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0094",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c552",
     "chapter": "const、volatile、static、extern",
     "topic": "extern与头文件",
     "difficulty": "面试",
-    "question": "遇到「extern与头文件」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面哪个选项最适合填入 config.c，完成 extern 声明对应的唯一定义？\n请重点从「extern与头文件」的单元测试覆盖角度判断（样例组 67）。\n/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
     "options": [
-      "头文件中的 extern 声明应与唯一源文件定义保持类型一致",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "头文件和源文件声明不同也没关系"
+      "int g_mode = 0;",
+      "extern int g_mode;",
+      "static int g_mode = 0;",
+      "#define g_mode 0"
     ],
     "answer": 0,
-    "explanation": "类型不一致会造成链接或运行期解释错误。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "extern 声明不分配存储，必须在一个源文件里提供匹配的外部定义。static 会变成内部链接，无法满足其他文件引用。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "extern",
       "头文件",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "嵌入式场景",
+      "补漏"
+    ],
+    "knowledgeId": "kp_0095",
+    "type": "missing_step",
+    "code": "/* config.h */\nextern int g_mode;\n\n/* config.c */\n/* ____ */",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c553",
     "chapter": "const、volatile、static、extern",
     "topic": "volatile const寄存器",
     "difficulty": "基础",
-    "question": "遇到「volatile const寄存器」相关 bug 时，哪项排查方向最合理？",
+    "question": "关于这段寄存器访问代码，哪项判断最准确？\n请重点从「volatile const寄存器」的代码评审角度判断（样例组 68）。\nvolatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "只读硬件寄存器常声明为 volatile const，表示值会变化但软件不应写",
-      "volatile const 表示变量永远不变",
-      "volatile const 可以随意写入"
+      "const 表示寄存器值永远不会变化",
+      "volatile 修饰被访问对象，const 修饰指针变量本身，适合表达固定寄存器地址访问",
+      "volatile 可以保证这次读改写是原子的",
+      "去掉 volatile 不会影响硬件寄存器访问语义"
     ],
     "answer": 1,
-    "explanation": "const 约束写访问，volatile 保证每次读取真实发生。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "这题区分 const 和 volatile 的位置。volatile 不保证原子性，const 也不表示硬件值不变。 审题时应同时看代码前置条件、边界输入、失败路径和平台假设；这些干扰项常把“能编译”误当成“语义安全”。",
     "tags": [
       "volatile",
       "const",
       "寄存器",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码阅读",
+      "补漏",
+      "嵌入式场景"
+    ],
+    "knowledgeId": "kp_0096",
+    "type": "scenario_code",
+    "code": "volatile uint32_t * const GPIO_ODR = (volatile uint32_t *)0x48000014u;\n*GPIO_ODR |= (1u << 5);",
+    "reviewStatus": "待复核"
   }
 ]

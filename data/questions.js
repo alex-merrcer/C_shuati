@@ -27,6 +27,7 @@ const ubTrapsExtra = require('./chapters/17-ub-traps-extra')
 const interviewExtra = require('./chapters/18-interview-extra')
 const dataStructures = require('./chapters/19-data-structures-stack-queue-list-heap')
 const sortingAlgorithms = require('./chapters/20-sorting-algorithms')
+const coverageFix = require('./chapters/21-coverage-fix')
 
 const questions = []
   .concat(basics)
@@ -58,5 +59,6 @@ const questions = []
   .concat(interviewExtra)
   .concat(dataStructures)
   .concat(sortingAlgorithms)
+  .concat(coverageFix)
 
 module.exports = questions

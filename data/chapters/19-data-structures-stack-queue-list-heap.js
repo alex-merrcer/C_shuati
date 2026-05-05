@@ -4,1299 +4,2294 @@ module.exports = [
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "基础",
-    "question": "关于「栈后进先出」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的内存破坏定位角度判断（样例组 21）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "栈是先进先出结构",
-      "栈只能用链表实现",
-      "栈的核心规则是后进先出，push 和 pop 都在栈顶进行",
-      "栈 pop 总是删除最早进入的元素"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "表达式求值、函数调用和撤销操作都常用这种思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数据结构",
       "栈",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0170",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c895",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "关于「顺序栈溢出」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的寄存器副作用角度判断（样例组 22）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "top 越界只影响显示不影响内存",
-      "栈空时 pop 会自动返回 0",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "数组实现的栈要在 push 前检查容量，避免 top 越界"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "嵌入式固定数组栈常见，边界检查比动态扩容更重要。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0171",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c896",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "易错",
-    "question": "关于「链式栈」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的编译优化影响角度判断（样例组 23）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "链式栈每个节点通常动态或从内存池分配，push/pop 修改头节点更方便",
-      "链式栈永远不会内存不足",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "嵌入式中若用动态分配，要考虑内存池和释放规则。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0172",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c897",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "关于「队列先进先出」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的资源受限 MCU角度判断（样例组 24）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "队列的核心规则是先进先出，入队在尾部，出队在头部",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "任务消息、串口接收和生产消费模型常用队列。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "FIFO",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0173",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c898",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "基础",
-    "question": "关于「循环队列空满判断」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的面试追问角度判断（样例组 25）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "循环队列要设计空和满的区分方式，常见做法是空一个位置或额外记录计数",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "head == tail 既可能表示空，也可能在不同设计中表示满，必须有约定。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "循环队列",
       "环形缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0174",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c899",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "进阶",
-    "question": "关于「链式队列」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的调试复盘角度判断（样例组 26）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "链式队列通常维护 head 和 tail，避免每次入队遍历到尾部"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "只保存 head 会让尾部入队退化为 O(n)。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0175",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c900",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "易错",
-    "question": "关于「单链表插入」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的量产固件稳定性角度判断（样例组 27）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "单链表插入节点时要先连接新节点的 next，再修改前驱节点指向",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "顺序错误可能丢失后续链表。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "插入",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0176",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c901",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "进阶",
-    "question": "关于「单链表删除」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的初始化顺序角度判断（样例组 28）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "删除节点要保存待删节点并修正前驱 next，随后按所有权释放或回收到池",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "删除节点只需 free 前驱节点"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "嵌入式中内存池链表尤其要避免重复释放和悬空指针。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "删除",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0177",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c902",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "基础",
-    "question": "关于「链表遍历」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的边界条件角度判断（样例组 29）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "访问 p->next 前不需要检查 p",
-      "遍历链表时应检查当前指针非 NULL，再访问成员",
-      "链表遍历一定比数组更快"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "空链表、尾节点和异常环路都要考虑。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "遍历",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0178",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c903",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "进阶",
-    "question": "关于「双向链表」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的失败路径角度判断（样例组 30）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "双向链表只需要维护 next",
-      "prev 指针可随时不初始化",
-      "双向链表不能 O(1) 删除已知节点",
-      "双向链表删除节点时要同时维护 prev 和 next 两个方向"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "少更新一个方向会让链表局部断裂或形成悬挂链接。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "双向链表",
       "指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0179",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c904",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "易错",
-    "question": "关于「链表与数组取舍」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的生命周期角度判断（样例组 31）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "数组随机访问快且局部性好，链表插删灵活但指针额外开销和缓存局部性差",
-      "数组不能用于队列",
-      "链表不占额外指针空间",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "嵌入式中要结合内存碎片、最大数量和实时性选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0180",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c905",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "进阶",
-    "question": "关于「堆结构用途」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的可移植性角度判断（样例组 32）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "堆取最高优先级必须线性扫描全部元素",
-      "堆结构常用于优先队列，能快速取得当前最高或最低优先级元素",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "这里关注数组维护的优先级结构，不展开树形题。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "优先队列",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0181",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c906",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "基础",
-    "question": "关于「堆插入上浮」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的中断安全角度判断（样例组 33）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "向堆结构插入元素后，通常通过上浮调整以恢复优先级关系",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "数组索引关系可用于找到父位置并逐步比较交换。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "上浮",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0182",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c907",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "进阶",
-    "question": "关于「堆删除堆顶」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的长期运行稳定性角度判断（样例组 34）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "删除堆顶通常用末尾元素补到顶部，再下沉恢复优先级关系"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "这样能避免整体移动数组。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "下沉",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "代码计算",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0183",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c908",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "易错",
-    "question": "关于「优先队列」，哪项说法更符合嵌入式 C 的稳妥写法？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的接口契约角度判断（样例组 35）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "优先队列按优先级取元素，不等同于普通 FIFO 队列",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "调度、定时器和事件处理可能用到优先级思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "优先队列",
       "堆",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0184",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c909",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "进阶",
-    "question": "代码评审时看到「栈后进先出」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的单元测试覆盖角度判断（样例组 36）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "栈的核心规则是后进先出，push 和 pop 都在栈顶进行",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "表达式求值、函数调用和撤销操作都常用这种思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数据结构",
       "栈",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0170",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c910",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "基础",
-    "question": "代码评审时看到「顺序栈溢出」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的代码评审角度判断（样例组 37）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "数组实现的栈要在 push 前检查容量，避免 top 越界",
-      "顺序栈满时 C 会自动扩容数组"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "嵌入式固定数组栈常见，边界检查比动态扩容更重要。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0171",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c911",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "进阶",
-    "question": "代码评审时看到「链式栈」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的内存破坏定位角度判断（样例组 38）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "链式栈必须从尾部遍历才能 pop",
-      "链式栈不需要保存 next 指针",
-      "链式栈每个节点通常动态或从内存池分配，push/pop 修改头节点更方便"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "嵌入式中若用动态分配，要考虑内存池和释放规则。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0172",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c912",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "易错",
-    "question": "代码评审时看到「队列先进先出」相关实现，优先检查哪一点？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的寄存器副作用角度判断（样例组 39）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "队列的核心规则是先进先出，入队在尾部，出队在头部",
-      "队列是后进先出结构",
-      "出队应删除最新入队元素",
-      "队列不能用数组实现"
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "任务消息、串口接收和生产消费模型常用队列。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "FIFO",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0173",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c913",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "进阶",
-    "question": "代码评审时看到「循环队列空满判断」相关实现，优先检查哪一点？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的编译优化影响角度判断（样例组 40）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "循环队列不需要容量",
-      "循环队列要设计空和满的区分方式，常见做法是空一个位置或额外记录计数",
-      "数组下标超过末尾后不用回绕",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "head == tail 既可能表示空，也可能在不同设计中表示满，必须有约定。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "循环队列",
       "环形缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0174",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c914",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "基础",
-    "question": "代码评审时看到「链式队列」相关实现，优先检查哪一点？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的资源受限 MCU角度判断（样例组 41）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "链式队列节点不需要释放或回收",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "链式队列通常维护 head 和 tail，避免每次入队遍历到尾部",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "只保存 head 会让尾部入队退化为 O(n)。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0175",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c915",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "进阶",
-    "question": "代码评审时看到「单链表插入」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的面试追问角度判断（样例组 42）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "单链表插入节点时要先连接新节点的 next，再修改前驱节点指向"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "顺序错误可能丢失后续链表。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "插入",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0176",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c916",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "易错",
-    "question": "代码评审时看到「单链表删除」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的调试复盘角度判断（样例组 43）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "删除节点要保存待删节点并修正前驱 next，随后按所有权释放或回收到池",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "嵌入式中内存池链表尤其要避免重复释放和悬空指针。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "删除",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0177",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c917",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "进阶",
-    "question": "代码评审时看到「链表遍历」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的量产固件稳定性角度判断（样例组 44）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遍历链表时应检查当前指针非 NULL，再访问成员",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "空链表、尾节点和异常环路都要考虑。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "遍历",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0178",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c918",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "基础",
-    "question": "代码评审时看到「双向链表」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的初始化顺序角度判断（样例组 45）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "双向链表删除节点时要同时维护 prev 和 next 两个方向",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "少更新一个方向会让链表局部断裂或形成悬挂链接。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "双向链表",
       "指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0179",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c919",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "进阶",
-    "question": "代码评审时看到「链表与数组取舍」相关实现，优先检查哪一点？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的边界条件角度判断（样例组 46）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "链表在所有场景都比数组快",
-      "数组随机访问快且局部性好，链表插删灵活但指针额外开销和缓存局部性差"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "嵌入式中要结合内存碎片、最大数量和实时性选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0180",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c920",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "易错",
-    "question": "代码评审时看到「堆结构用途」相关实现，优先检查哪一点？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的失败路径角度判断（样例组 47）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "堆结构常用于优先队列，能快速取得当前最高或最低优先级元素",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "堆结构和 C 语言动态内存堆完全等价",
-      "堆只能用于排序不能用于优先队列"
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "这里关注数组维护的优先级结构，不展开树形题。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "优先队列",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0181",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c921",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "进阶",
-    "question": "代码评审时看到「堆插入上浮」相关实现，优先检查哪一点？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的生命周期角度判断（样例组 48）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "插入堆后不需要调整",
-      "向堆结构插入元素后，通常通过上浮调整以恢复优先级关系",
-      "堆插入必须移动所有元素排序",
-      "上浮会破坏所有已存在元素"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "数组索引关系可用于找到父位置并逐步比较交换。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "上浮",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0182",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c922",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "基础",
-    "question": "代码评审时看到「堆删除堆顶」相关实现，优先检查哪一点？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的可移植性角度判断（样例组 49）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "删除堆顶不需要处理最后一个元素",
-      "下沉只适用于链表",
-      "删除堆顶通常用末尾元素补到顶部，再下沉恢复优先级关系",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "这样能避免整体移动数组。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "下沉",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "代码计算",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0183",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c923",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "进阶",
-    "question": "代码评审时看到「优先队列」相关实现，优先检查哪一点？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的中断安全角度判断（样例组 50）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "优先队列只能用递归实现",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "优先队列按优先级取元素，不等同于普通 FIFO 队列"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "调度、定时器和事件处理可能用到优先级思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "优先队列",
       "堆",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0184",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c924",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "易错",
-    "question": "下列关于「栈后进先出」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的长期运行稳定性角度判断（样例组 51）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "栈的核心规则是后进先出，push 和 pop 都在栈顶进行",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "表达式求值、函数调用和撤销操作都常用这种思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数据结构",
       "栈",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0170",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c925",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "下列关于「顺序栈溢出」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的接口契约角度判断（样例组 52）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "数组实现的栈要在 push 前检查容量，避免 top 越界",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "嵌入式固定数组栈常见，边界检查比动态扩容更重要。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0171",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c926",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "基础",
-    "question": "下列关于「链式栈」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的单元测试覆盖角度判断（样例组 53）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "链式栈每个节点通常动态或从内存池分配，push/pop 修改头节点更方便",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "嵌入式中若用动态分配，要考虑内存池和释放规则。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0172",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c927",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "下列关于「队列先进先出」的理解，哪项最不容易埋坑？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的代码评审角度判断（样例组 54）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "队列的核心规则是先进先出，入队在尾部，出队在头部"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "任务消息、串口接收和生产消费模型常用队列。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "FIFO",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0173",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c928",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "易错",
-    "question": "下列关于「循环队列空满判断」的理解，哪项最不容易埋坑？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的内存破坏定位角度判断（样例组 55）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "循环队列要设计空和满的区分方式，常见做法是空一个位置或额外记录计数",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "head == tail 永远表示满"
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "head == tail 既可能表示空，也可能在不同设计中表示满，必须有约定。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "循环队列",
       "环形缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0174",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c929",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "进阶",
-    "question": "下列关于「链式队列」的理解，哪项最不容易埋坑？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的寄存器副作用角度判断（样例组 56）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "链式队列通常维护 head 和 tail，避免每次入队遍历到尾部",
-      "链式队列只需要 tail 不需要 head",
-      "入队必须从头遍历才正确"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "只保存 head 会让尾部入队退化为 O(n)。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0175",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c930",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "基础",
-    "question": "下列关于「单链表插入」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的编译优化影响角度判断（样例组 57）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "先丢掉原 next 更简单安全",
-      "插入不需要考虑头节点",
-      "单链表插入节点时要先连接新节点的 next，再修改前驱节点指向",
-      "单链表插入一定要移动所有元素"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "顺序错误可能丢失后续链表。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "插入",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0176",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c931",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "进阶",
-    "question": "下列关于「单链表删除」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的资源受限 MCU角度判断（样例组 58）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "删除后所有外部指针自动失效为 NULL",
-      "删除头节点和中间节点完全不需要区分",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "删除节点要保存待删节点并修正前驱 next，随后按所有权释放或回收到池"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "嵌入式中内存池链表尤其要避免重复释放和悬空指针。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "删除",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0177",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c932",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "易错",
-    "question": "下列关于「链表遍历」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的面试追问角度判断（样例组 59）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "遍历链表时应检查当前指针非 NULL，再访问成员",
-      "链表尾节点 next 必须指向自己",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "空链表、尾节点和异常环路都要考虑。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "遍历",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0178",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c933",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "进阶",
-    "question": "下列关于「双向链表」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的调试复盘角度判断（样例组 60）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "双向链表删除节点时要同时维护 prev 和 next 两个方向",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "少更新一个方向会让链表局部断裂或形成悬挂链接。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "双向链表",
       "指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0179",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c934",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "基础",
-    "question": "下列关于「链表与数组取舍」的理解，哪项最不容易埋坑？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的量产固件稳定性角度判断（样例组 61）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "数组随机访问快且局部性好，链表插删灵活但指针额外开销和缓存局部性差",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "嵌入式中要结合内存碎片、最大数量和实时性选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0180",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c935",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "进阶",
-    "question": "下列关于「堆结构用途」的理解，哪项最不容易埋坑？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的初始化顺序角度判断（样例组 62）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "堆结构常用于优先队列，能快速取得当前最高或最低优先级元素"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "这里关注数组维护的优先级结构，不展开树形题。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "优先队列",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0181",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c936",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "易错",
-    "question": "下列关于「堆插入上浮」的理解，哪项最不容易埋坑？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的边界条件角度判断（样例组 63）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "向堆结构插入元素后，通常通过上浮调整以恢复优先级关系",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "数组索引关系可用于找到父位置并逐步比较交换。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "上浮",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0182",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c937",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "进阶",
-    "question": "下列关于「堆删除堆顶」的理解，哪项最不容易埋坑？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的失败路径角度判断（样例组 64）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "删除堆顶通常用末尾元素补到顶部，再下沉恢复优先级关系",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "删除堆顶必须把数组整体左移并保持有序"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 1,
-    "explanation": "这样能避免整体移动数组。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "下沉",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "代码计算",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0183",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c938",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "基础",
-    "question": "下列关于「优先队列」的理解，哪项最不容易埋坑？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的生命周期角度判断（样例组 65）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "优先队列一定按插入时间出队",
-      "优先队列按优先级取元素，不等同于普通 FIFO 队列",
-      "优先队列不能处理相同优先级"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "调度、定时器和事件处理可能用到优先级思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "优先队列",
       "堆",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0184",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c939",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「栈后进先出」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的可移植性角度判断（样例组 66）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "栈是先进先出结构",
-      "栈只能用链表实现",
-      "栈 pop 总是删除最早进入的元素",
-      "栈的核心规则是后进先出，push 和 pop 都在栈顶进行"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "表达式求值、函数调用和撤销操作都常用这种思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数据结构",
       "栈",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0170",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c940",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「顺序栈溢出」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的中断安全角度判断（样例组 67）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "数组实现的栈要在 push 前检查容量，避免 top 越界",
-      "top 越界只影响显示不影响内存",
-      "栈空时 pop 会自动返回 0",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "嵌入式固定数组栈常见，边界检查比动态扩容更重要。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0171",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c941",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「链式栈」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的长期运行稳定性角度判断（样例组 68）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "链式栈永远不会内存不足",
-      "链式栈每个节点通常动态或从内存池分配，push/pop 修改头节点更方便",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "嵌入式中若用动态分配，要考虑内存池和释放规则。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0172",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c942",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「队列先进先出」，哪项判断更可靠？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的接口契约角度判断（样例组 69）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "队列的核心规则是先进先出，入队在尾部，出队在头部",
-      "依赖一次测试输出即可证明该写法在所有平台都正确"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "任务消息、串口接收和生产消费模型常用队列。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "FIFO",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0173",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c943",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「循环队列空满判断」，哪项判断更可靠？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的单元测试覆盖角度判断（样例组 70）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "循环队列要设计空和满的区分方式，常见做法是空一个位置或额外记录计数"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位"
     ],
     "answer": 3,
-    "explanation": "head == tail 既可能表示空，也可能在不同设计中表示满，必须有约定。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "循环队列",
       "环形缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0174",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c944",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式队列",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「链式队列」，哪项判断更可靠？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「链式队列」的代码评审角度判断（样例组 71）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "链式队列通常维护 head 和 tail，避免每次入队遍历到尾部",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 0,
-    "explanation": "只保存 head 会让尾部入队退化为 O(n)。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0175",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c945",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表插入",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「单链表插入」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表插入」的内存破坏定位角度判断（样例组 72）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "单链表插入节点时要先连接新节点的 next，再修改前驱节点指向",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "顺序错误可能丢失后续链表。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "插入",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0176",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c946",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "单链表删除",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「单链表删除」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「单链表删除」的寄存器副作用角度判断（样例组 73）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "删除节点要保存待删节点并修正前驱 next，随后按所有权释放或回收到池",
-      "删除节点只需 free 前驱节点"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "嵌入式中内存池链表尤其要避免重复释放和悬空指针。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "删除",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0177",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c947",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表遍历",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「链表遍历」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表遍历」的编译优化影响角度判断（样例组 74）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "访问 p->next 前不需要检查 p",
-      "链表遍历一定比数组更快",
-      "遍历链表时应检查当前指针非 NULL，再访问成员"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "空链表、尾节点和异常环路都要考虑。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "遍历",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0178",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c948",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "双向链表",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「双向链表」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「双向链表」的资源受限 MCU角度判断（样例组 75）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "双向链表删除节点时要同时维护 prev 和 next 两个方向",
-      "双向链表只需要维护 next",
-      "prev 指针可随时不初始化",
-      "双向链表不能 O(1) 删除已知节点"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "少更新一个方向会让链表局部断裂或形成悬挂链接。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "双向链表",
       "指针",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0179",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c949",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链表与数组取舍",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「链表与数组取舍」，哪项判断更可靠？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链表与数组取舍」的面试追问角度判断（样例组 76）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "数组不能用于队列",
-      "数组随机访问快且局部性好，链表插删灵活但指针额外开销和缓存局部性差",
-      "链表不占额外指针空间",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 1,
-    "explanation": "嵌入式中要结合内存碎片、最大数量和实时性选择。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "链表",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0180",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c950",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆结构用途",
     "difficulty": "基础",
-    "question": "做裸机或 RTOS 项目时使用「堆结构用途」，哪项判断更可靠？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆结构用途」的调试复盘角度判断（样例组 77）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "堆取最高优先级必须线性扫描全部元素",
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "堆结构常用于优先队列，能快速取得当前最高或最低优先级元素",
-      "把所有警告关闭，可以避免这类问题影响程序运行"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 2,
-    "explanation": "这里关注数组维护的优先级结构，不展开树形题。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "优先队列",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0181",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c951",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆插入上浮",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「堆插入上浮」，哪项判断更可靠？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆插入上浮」的量产固件稳定性角度判断（样例组 78）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "只要当前编译器能通过，就可以认为写法完全可移植",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "向堆结构插入元素后，通常通过上浮调整以恢复优先级关系"
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用",
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标"
     ],
     "answer": 3,
-    "explanation": "数组索引关系可用于找到父位置并逐步比较交换。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "上浮",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "上浮调整",
+      "代码计算"
+    ],
+    "knowledgeId": "kp_0182",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c952",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "堆删除堆顶",
     "difficulty": "易错",
-    "question": "做裸机或 RTOS 项目时使用「堆删除堆顶」，哪项判断更可靠？",
+    "question": "这组公式更符合哪种堆数组下标约定？\n请重点从「堆删除堆顶」的初始化顺序角度判断（样例组 79）。\nsize_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
     "options": [
-      "删除堆顶通常用末尾元素补到顶部，再下沉恢复优先级关系",
-      "把所有警告关闭，可以避免这类问题影响程序运行",
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险"
+      "0 基数组堆，parent 和 left 分别对应父节点与左孩子下标",
+      "1 基数组堆，left 应该是 2 * i + 1",
+      "链式堆结构，不需要数组下标",
+      "最大堆专用公式，最小堆不能使用"
     ],
     "answer": 0,
-    "explanation": "这样能避免整体移动数组。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "C 数组通常是 0 基下标。最大堆和最小堆的下标公式相同，比较方向不同。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点、上浮调整”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "堆",
       "下沉",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "代码计算",
+      "上浮调整"
+    ],
+    "knowledgeId": "kp_0183",
+    "type": "calculation",
+    "code": "size_t parent(size_t i) {\n    return (i - 1u) / 2u;\n}\n\nsize_t left(size_t i) {\n    return 2u * i + 1u;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c953",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "优先队列",
     "difficulty": "进阶",
-    "question": "做裸机或 RTOS 项目时使用「优先队列」，哪项判断更可靠？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「优先队列」的边界条件角度判断（样例组 80）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "依赖一次测试输出即可证明该写法在所有平台都正确",
-      "优先队列按优先级取元素，不等同于普通 FIFO 队列",
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "调度、定时器和事件处理可能用到优先级思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "优先队列",
       "堆",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0184",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c954",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "栈后进先出",
     "difficulty": "基础",
-    "question": "遇到「栈后进先出」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「栈后进先出」的失败路径角度判断（样例组 81）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "遇到不确定行为时，直接用强制类型转换就能消除风险",
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "栈的核心规则是后进先出，push 和 pop 都在栈顶进行",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 2,
-    "explanation": "表达式求值、函数调用和撤销操作都常用这种思想。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "数据结构",
       "栈",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0170",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c955",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "顺序栈溢出",
     "difficulty": "进阶",
-    "question": "遇到「顺序栈溢出」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「顺序栈溢出」的生命周期角度判断（样例组 82）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "代码体积小就一定更安全，不需要关注边界条件",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "顺序栈满时 C 会自动扩容数组",
-      "数组实现的栈要在 push 前检查容量，避免 top 越界"
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用",
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free"
     ],
     "answer": 3,
-    "explanation": "嵌入式固定数组栈常见，边界检查比动态扩容更重要。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "数组",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0171",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c956",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "链式栈",
     "difficulty": "易错",
-    "question": "遇到「链式栈」相关 bug 时，哪项排查方向最合理？",
+    "question": "下面链表代码的主要问题是什么？\n请重点从「链式栈」的可移植性角度判断（样例组 83）。\nvoid delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
     "options": [
-      "链式栈每个节点通常动态或从内存池分配，push/pop 修改头节点更方便",
-      "嵌入式项目资源有限，所以可以忽略标准 C 的基本规则",
-      "链式栈必须从尾部遍历才能 pop",
-      "链式栈不需要保存 next 指针"
+      "释放 victim 后又访问 victim->next，应先保存 next 再 free",
+      "free 后读取结构体成员是安全的，只要不写入",
+      "prev->next 会被 free 自动改成后继节点",
+      "把 victim 声明为 static 就能避免释放后使用"
     ],
     "answer": 0,
-    "explanation": "嵌入式中若用动态分配，要考虑内存池和释放规则。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "链表删除要关注指针更新顺序和所有权。正确选项指出释放后使用；free 不会自动维护链表链接。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "栈",
       "链表",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "代码计算",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点",
+      "错误诊断"
+    ],
+    "knowledgeId": "kp_0172",
+    "type": "bug_fix",
+    "code": "void delete_after(Node *prev) {\n    Node *victim = prev->next;\n    free(victim);\n    prev->next = victim->next;\n}",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c957",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "队列先进先出",
     "difficulty": "进阶",
-    "question": "遇到「队列先进先出」相关 bug 时，哪项排查方向最合理？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「队列先进先出」的中断安全角度判断（样例组 84）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "队列是后进先出结构",
-      "队列的核心规则是先进先出，入队在尾部，出队在头部",
-      "出队应删除最新入队元素",
-      "队列不能用数组实现"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 1,
-    "explanation": "任务消息、串口接收和生产消费模型常用队列。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "队列",
       "FIFO",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "错误诊断",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0173",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   },
   {
     "id": "c958",
     "chapter": "数据结构：栈、队列、链表与堆",
     "topic": "循环队列空满判断",
     "difficulty": "基础",
-    "question": "遇到「循环队列空满判断」相关 bug 时，哪项排查方向最合理？",
+    "question": "这个循环队列实现缺少哪项设计？\n请重点从「循环队列空满判断」的长期运行稳定性角度判断（样例组 85）。\ntypedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
     "options": [
-      "循环队列不需要容量",
-      "数组下标超过末尾后不用回绕",
-      "循环队列要设计空和满的区分方式，常见做法是空一个位置或额外记录计数",
-      "只要当前编译器能通过，就可以认为写法完全可移植"
+      "head == tail 天然同时表示空和满，不需要区分",
+      "把 head 和 tail 改成 int 就能自动区分空满",
+      "需要区分空和满，例如空一个位置、记录计数或增加状态位",
+      "数组容量是 8，所以最多保存 8 个元素且无歧义"
     ],
     "answer": 2,
-    "explanation": "head == tail 既可能表示空，也可能在不同设计中表示满，必须有约定。 这道题的重点是先确认边界条件、对象生命周期和平台差异，再决定写法是否安全。",
+    "explanation": "循环队列必须明确空满判定规则。正确选项给出常见设计，干扰项没有解决 head == tail 的歧义。 同时要把“自动存储期、静态存储期、局部变量分配、push操作、pop操作、入队操作、出队操作、删除头节点”作为关联知识点复盘，避免只记住代码片段而漏掉知识树名称。",
     "tags": [
       "循环队列",
       "环形缓冲区",
-      "扩展题库"
-    ]
+      "扩展题库",
+      "代码相关题",
+      "补漏",
+      "自动存储期",
+      "静态存储期",
+      "局部变量分配",
+      "push操作",
+      "pop操作",
+      "入队操作",
+      "出队操作",
+      "删除头节点"
+    ],
+    "knowledgeId": "kp_0174",
+    "type": "missing_step",
+    "code": "typedef struct {\n    uint8_t buf[8];\n    uint8_t head;\n    uint8_t tail;\n} Queue;\n\nint empty(const Queue *q) { return q->head == q->tail; }\nint full(const Queue *q) { return q->head == q->tail; }",
+    "reviewStatus": "待复核"
   }
 ]
