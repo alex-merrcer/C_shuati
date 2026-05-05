@@ -1,4 +1,5 @@
 const questions = require('../../data/questions')
+const storage = require('../../utils/storage')
 
 function shuffleQuestions(list) {
   const copied = list.slice()
@@ -13,32 +14,49 @@ function shuffleQuestions(list) {
   return copied
 }
 
-function getWrongQuestionIds() {
-  const ids = wx.getStorageSync('wrongQuestionIds')
-  return Array.isArray(ids) ? ids : []
+function getQuestionById(id) {
+  for (let i = 0; i < questions.length; i += 1) {
+    if (questions[i].id === id) {
+      return questions[i]
+    }
+  }
+
+  return null
 }
 
-function saveWrongQuestionId(id) {
-  const ids = getWrongQuestionIds()
+function getWrongQuestionIds() {
+  return storage.getWrongQuestionIds(questions)
+}
 
-  if (ids.indexOf(id) === -1) {
-    ids.push(id)
-    wx.setStorageSync('wrongQuestionIds', ids)
+function saveWrongQuestionId(id, selectedAnswer) {
+  const question = getQuestionById(id)
+
+  if (!question) {
+    return false
   }
+
+  return storage.saveWrongQuestion(question, selectedAnswer)
 }
 
 function removeWrongQuestionId(id) {
-  const ids = getWrongQuestionIds()
-  const nextIds = ids.filter(function (item) {
-    return item !== id
-  })
-
-  wx.setStorageSync('wrongQuestionIds', nextIds)
+  return storage.removeWrongQuestion(id)
 }
 
 function getOptionLabel(index) {
   const labels = ['A', 'B', 'C', 'D']
   return labels[index] || ''
+}
+
+function createRoundStats(total) {
+  return {
+    total: total,
+    answered: 0,
+    correct: 0,
+    wrong: 0,
+    accuracy: 0,
+    newWrongCount: 0,
+    removedWrongCount: 0
+  }
 }
 
 Page({
@@ -47,6 +65,7 @@ Page({
     chapter: '',
     questionList: [],
     answerRecords: {},
+    roundStats: createRoundStats(0),
     currentIndex: 0,
     totalCount: 0,
     currentQuestion: null,
@@ -61,6 +80,8 @@ Page({
     const mode = options.mode || 'random'
     const chapter = options.chapter ? decodeURIComponent(options.chapter) : ''
     let list = []
+
+    storage.migrateWrongQuestions(questions)
 
     if (mode === 'chapter') {
       list = questions.filter(function (item) {
@@ -84,7 +105,7 @@ Page({
       })
 
       if (list.length === 0) {
-        wx.setStorageSync('wrongQuestionIds', [])
+        storage.clearWrongQuestions()
         this.backWithToast('暂无错题')
         return
       }
@@ -99,6 +120,7 @@ Page({
       chapter: chapter,
       questionList: shuffled,
       answerRecords: {},
+      roundStats: createRoundStats(shuffled.length),
       currentIndex: 0,
       totalCount: shuffled.length
     })
@@ -177,34 +199,65 @@ Page({
   submitSelectedAnswer(selectedAnswer) {
     const question = this.data.currentQuestion
 
-    if (!question || selectedAnswer < 0 || selectedAnswer > 3) {
+    if (!question || selectedAnswer < 0 || selectedAnswer > 3 || this.data.answerRecords[question.id]) {
       return
     }
 
     const isCorrect = selectedAnswer === question.answer
     const answerRecords = Object.assign({}, this.data.answerRecords)
+    let newWrong = false
+    let removedWrong = false
 
     answerRecords[question.id] = {
       selectedAnswer: selectedAnswer,
-      isCorrect: isCorrect
+      isCorrect: isCorrect,
+      answeredAt: Date.now()
     }
 
     if (isCorrect) {
       if (this.data.mode === 'wrong') {
-        removeWrongQuestionId(question.id)
+        removedWrong = removeWrongQuestionId(question.id)
       }
     } else {
-      saveWrongQuestionId(question.id)
+      newWrong = saveWrongQuestionId(question.id, selectedAnswer)
     }
+
+    storage.updateStudyStats(question, isCorrect)
 
     this.setData({
       answerRecords: answerRecords,
+      roundStats: this.buildNextRoundStats(isCorrect, newWrong, removedWrong),
       selectedAnswer: selectedAnswer,
       submitted: true,
       isCorrect: isCorrect,
       correctAnswerText: isCorrect ? '' : getOptionLabel(question.answer) + '. ' + question.options[question.answer],
       optionItems: this.buildOptionItems(question, selectedAnswer, true)
     })
+  },
+
+  buildNextRoundStats(isCorrect, newWrong, removedWrong) {
+    const stats = Object.assign({}, this.data.roundStats)
+
+    stats.total = this.data.totalCount
+    stats.answered += 1
+
+    if (isCorrect) {
+      stats.correct += 1
+    } else {
+      stats.wrong += 1
+    }
+
+    if (newWrong) {
+      stats.newWrongCount += 1
+    }
+
+    if (removedWrong) {
+      stats.removedWrongCount += 1
+    }
+
+    stats.accuracy = stats.answered ? Math.round((stats.correct / stats.answered) * 100) : 0
+
+    return stats
   },
 
   handleTouchStart(e) {
@@ -245,16 +298,7 @@ Page({
     const that = this
 
     if (this.data.currentIndex >= this.data.totalCount - 1) {
-      wx.showModal({
-        title: '提示',
-        content: '本轮刷题完成',
-        showCancel: false,
-        success() {
-          wx.navigateBack({
-            delta: 1
-          })
-        }
-      })
+      this.showRoundStatsAndBack()
       return
     }
 
@@ -280,6 +324,30 @@ Page({
       currentIndex: this.data.currentIndex - 1
     }, function () {
       that.loadCurrentQuestion()
+    })
+  },
+
+  showRoundStatsAndBack() {
+    const stats = this.data.roundStats
+    const content = [
+      '总题数：' + stats.total,
+      '已答题：' + stats.answered,
+      '答对：' + stats.correct,
+      '答错：' + stats.wrong,
+      '正确率：' + stats.accuracy + '%',
+      '新增错题：' + stats.newWrongCount,
+      '移出错题：' + stats.removedWrongCount
+    ].join('\n')
+
+    wx.showModal({
+      title: '本轮刷题完成',
+      content: content,
+      showCancel: false,
+      success() {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
     })
   },
 

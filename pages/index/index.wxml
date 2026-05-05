@@ -8,10 +8,30 @@
     </view>
   </view>
 
+  <view class="overview-grid">
+    <view class="overview-item">
+      <view class="overview-value">{{overview.totalAnswered}}</view>
+      <view class="overview-label">累计刷题</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.totalAccuracyText}}</view>
+      <view class="overview-label">累计正确率</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.todayAnswered}}</view>
+      <view class="overview-label">今日刷题</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.wrongCount}}</view>
+      <view class="overview-label">错题数量</view>
+    </view>
+  </view>
+
   <view class="actions">
     <button class="primary-btn" bindtap="startRandom">随机刷题</button>
     <button class="secondary-btn" bindtap="openWrongBook">错题本</button>
     <button class="danger-btn" bindtap="clearWrongBook">清空错题</button>
+    <button class="neutral-btn" bindtap="clearStudyStats">清空学习统计</button>
   </view>
 
   <view class="section-title">按章节刷题</view>
@@ -24,7 +44,7 @@
       bindtap="startChapter"
     >
       <view class="chapter-name">{{item.name}}</view>
-      <view class="chapter-meta">{{item.count}} 题</view>
+      <view class="chapter-meta">共 {{item.count}} 题｜{{item.studyText}}</view>
     </view>
   </view>
 </view>
