@@ -4,7 +4,7 @@
 }
 
 .hero {
-  padding: 28rpx 28rpx 32rpx;
+  padding: 28rpx;
   border-radius: 16rpx;
   background: #ffffff;
   box-shadow: 0 8rpx 28rpx rgba(37, 51, 76, 0.08);
@@ -12,30 +12,15 @@
 
 .title {
   color: #0f172a;
-  font-size: 48rpx;
+  font-size: 44rpx;
   font-weight: 700;
   line-height: 1.25;
 }
 
 .subtitle {
-  margin-top: 12rpx;
+  margin-top: 10rpx;
   color: #667085;
-  font-size: 28rpx;
-}
-
-.stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18rpx;
-  margin-top: 24rpx;
-  color: #475467;
-  font-size: 26rpx;
-}
-
-.stats text {
-  padding: 8rpx 18rpx;
-  border-radius: 999rpx;
-  background: #eef4ff;
+  font-size: 27rpx;
 }
 
 .overview-grid {
@@ -55,7 +40,7 @@
 
 .overview-value {
   color: #111827;
-  font-size: 38rpx;
+  font-size: 36rpx;
   font-weight: 700;
   line-height: 1.25;
   word-break: break-all;
@@ -67,78 +52,56 @@
   font-size: 25rpx;
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18rpx;
-  margin: 28rpx 0 36rpx;
-}
-
-.primary-btn,
-.info-btn,
-.secondary-btn,
-.danger-btn,
-.neutral-btn {
+.summary-card {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 92rpx;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.primary-btn {
-  background: #2563eb;
-}
-
-.info-btn {
-  background: #7c3aed;
-}
-
-.secondary-btn {
-  background: #0f766e;
-}
-
-.danger-btn {
-  background: #dc2626;
-}
-
-.neutral-btn {
-  color: #1f2937;
-  background: #e5e7eb;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  padding: 22rpx;
+  border-radius: 14rpx;
+  color: #344054;
+  background: #ffffff;
+  font-size: 27rpx;
+  box-shadow: 0 8rpx 28rpx rgba(37, 51, 76, 0.08);
 }
 
 .section-title {
-  margin-bottom: 16rpx;
+  margin: 34rpx 0 16rpx;
   color: #111827;
   font-size: 32rpx;
   font-weight: 700;
 }
 
-.chapter-list {
+.stat-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 14rpx;
 }
 
-.chapter-item {
-  min-height: 118rpx;
-  padding: 22rpx 24rpx;
+.stat-item {
+  padding: 22rpx;
   border: 2rpx solid #e5e7eb;
   border-radius: 14rpx;
   background: #ffffff;
 }
 
-.chapter-name {
+.stat-name {
   color: #1f2937;
   font-size: 30rpx;
   font-weight: 600;
   line-height: 1.45;
 }
 
-.chapter-meta {
+.stat-meta {
   margin-top: 8rpx;
   color: #667085;
   font-size: 25rpx;
   line-height: 1.5;
+}
+
+.stat-rate {
+  margin-top: 8rpx;
+  color: #2563eb;
+  font-size: 27rpx;
+  font-weight: 600;
 }

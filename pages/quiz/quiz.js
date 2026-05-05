@@ -28,7 +28,7 @@ function getWrongQuestionIds() {
   return storage.getWrongQuestionIds(questions)
 }
 
-function saveWrongQuestionId(id, selectedAnswer) {
+function saveWrongQuestionRecord(id, selectedAnswer) {
   const question = getQuestionById(id)
 
   if (!question) {
@@ -38,7 +38,7 @@ function saveWrongQuestionId(id, selectedAnswer) {
   return storage.saveWrongQuestion(question, selectedAnswer)
 }
 
-function removeWrongQuestionId(id) {
+function removeWrongQuestionRecord(id) {
   return storage.removeWrongQuestion(id)
 }
 
@@ -216,10 +216,10 @@ Page({
 
     if (isCorrect) {
       if (this.data.mode === 'wrong') {
-        removedWrong = removeWrongQuestionId(question.id)
+        removedWrong = removeWrongQuestionRecord(question.id)
       }
     } else {
-      newWrong = saveWrongQuestionId(question.id, selectedAnswer)
+      newWrong = saveWrongQuestionRecord(question.id, selectedAnswer)
     }
 
     storage.updateStudyStats(question, isCorrect)

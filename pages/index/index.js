@@ -90,6 +90,12 @@ Page({
     })
   },
 
+  openStudyStats() {
+    wx.navigateTo({
+      url: '/pages/stats/stats'
+    })
+  },
+
   clearWrongBook() {
     const that = this
 

@@ -29,6 +29,7 @@
 
   <view class="actions">
     <button class="primary-btn" bindtap="startRandom">随机刷题</button>
+    <button class="info-btn" bindtap="openStudyStats">学习统计</button>
     <button class="secondary-btn" bindtap="openWrongBook">错题本</button>
     <button class="danger-btn" bindtap="clearWrongBook">清空错题</button>
     <button class="neutral-btn" bindtap="clearStudyStats">清空学习统计</button>

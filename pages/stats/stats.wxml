@@ -1,0 +1,49 @@
+<view class="page">
+  <view class="hero">
+    <view class="title">学习统计</view>
+    <view class="subtitle">累计、章节和知识点正确率</view>
+  </view>
+
+  <view class="overview-grid">
+    <view class="overview-item">
+      <view class="overview-value">{{overview.totalAnswered}}</view>
+      <view class="overview-label">累计刷题</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.totalAccuracyText}}</view>
+      <view class="overview-label">累计正确率</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.todayAnswered}}</view>
+      <view class="overview-label">今日刷题</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{overview.todayAccuracyText}}</view>
+      <view class="overview-label">今日正确率</view>
+    </view>
+  </view>
+
+  <view class="summary-card">
+    <view>累计答对 {{overview.totalCorrect}}｜答错 {{overview.totalWrong}}</view>
+    <view>今日答对 {{overview.todayCorrect}}｜答错 {{overview.todayWrong}}</view>
+    <view>最近学习：{{overview.lastStudyText}}</view>
+  </view>
+
+  <view class="section-title">章节正确率</view>
+  <view class="stat-list">
+    <view class="stat-item" wx:for="{{chapterRows}}" wx:key="name">
+      <view class="stat-name">{{item.name}}</view>
+      <view class="stat-meta">共 {{item.count}} 题｜已答 {{item.answered}}｜答对 {{item.correct}}｜答错 {{item.wrong}}</view>
+      <view class="stat-rate">正确率 {{item.accuracyText}}</view>
+    </view>
+  </view>
+
+  <view class="section-title">知识点正确率</view>
+  <view class="stat-list">
+    <view class="stat-item" wx:for="{{topicRows}}" wx:key="name">
+      <view class="stat-name">{{item.name}}</view>
+      <view class="stat-meta">共 {{item.count}} 题｜已答 {{item.answered}}｜答对 {{item.correct}}｜答错 {{item.wrong}}</view>
+      <view class="stat-rate">正确率 {{item.accuracyText}}</view>
+    </view>
+  </view>
+</view>
